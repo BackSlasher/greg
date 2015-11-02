@@ -43,14 +43,6 @@ class RepoConfig:
             )
            )
 
-
-# Config parts:
-# * repo configs
-# * authentication keys (incoming) for every provider
-# * authentication keys (incoming) for every builder
-# * credentials (outgoing) for every provider
-# * credentials (outgoing) for every builder
-
 class Config:
   def __init__(self, repos, providers, builders):
     self.repos=repos
