@@ -1,0 +1,32 @@
+# Config file example for Greg
+
+providers:
+  bitbucket.org:
+    username: blabla
+    password: blublu
+    incoming_token: abcd
+  github.com:
+    username: fafaf
+    password: sfsdfs
+    incoming_token: sdfsdf
+builders:
+  jenkins:
+    url: http://best.jenkins.com/
+    username: blech
+    password: bluchs
+    incoming_token: glogush
+repos:
+  - names:
+    - /^chef-/
+    organizations: [dy-devops]
+    provider: bitbucket
+    jobs:
+      test: {name: cookbook-test}
+      merge: {name: cookbook-merge}
+  - names:
+    - firewall
+    organizations: [dy-devops]
+    provider: bitbucket
+    jobs:
+      test: {name: verify-rubocop}
+
