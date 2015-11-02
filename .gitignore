@@ -60,7 +60,6 @@ target/
 
 # Virtualenv
 bin/
-greg/
 include/
 local/
 
