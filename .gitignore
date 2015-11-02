@@ -63,3 +63,6 @@ bin/
 greg/
 include/
 local/
+
+# Vim
+.*.swp
