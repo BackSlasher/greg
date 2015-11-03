@@ -81,7 +81,8 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-            'pyyaml'
+            'pyyaml',
+            'requests',
             ], #TODO complete
 
     # List additional groups of dependencies here (e.g. development
