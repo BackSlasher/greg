@@ -29,9 +29,10 @@ class BridgeBuilderJenkins(BridgeBuilder):
     job_good = ( body['build']['status']=='SUCCESS' or body['build']['status']=='UNSTABLE' )
     commit=body['build']['parameters']['COMMIT']
     context=body['build']['parameters']['CONTEXT'] # TODO not actually implemented with us, should be used to indicate whether this is a test/merge
-    job_pr=body['build']['parameters']['PR']
-    job_report=body['build']['parameters']['REPORT']
-    job_target=body['build']['parameters']['TARGET']
+    job_report=body['build']['parameters']['REPORT']=='true'
+    # Optional values
+    job_pr=body['build']['parameters'].get('PR',None)
+    job_target=body['build']['parameters'].get('TARGET',None)
     job_url=body['build']['full_url']
     return {
         'name': job_name,
@@ -41,7 +42,7 @@ class BridgeBuilderJenkins(BridgeBuilder):
         'pr': job_pr,
         'context': context,
         'source': {
-          'provider': provider,
+          'provider_url': provider,
           'organization': org,
           'name': repo_name,
           'commit': commit,
