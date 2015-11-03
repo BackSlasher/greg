@@ -26,6 +26,13 @@ Structure
 =========
 This iteration of Greg is designed to be modular. It contains multiple "bridge" modules that allow it to work with multiple build servers / code providers. I've only implemented what I require, but this should allow one to integreate Greg with other builders/providers
 
+Hacking and testing
+===================
+- Clone
+- (optional) Create virtualenv: ``virtualenv .``
+- install in dev mode: ``pip install -e .``
+- use ``make test`` for testing
+
 External configuration
 ======================
 
