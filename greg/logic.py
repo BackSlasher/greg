@@ -18,7 +18,7 @@ def build(builder_type,body,params={}):
   bubri = greg.bridge_builder.locate_bridge(builder_type)
   job_result = bubri.parse_payload(body,params)
   #TODO find provider bridge
-  pobri = greg.bridge_provider.locate_bridge_by_url(job_result['source']['provider'])
+  probri = greg.bridge_provider.locate_bridge_by_url(job_result['source']['provider'])
   # return if job is not to be reported
   if not job_result['report']:
       #TODO log that skipping job
@@ -28,7 +28,7 @@ def build(builder_type,body,params={}):
         # TODO log that not reporting succesful merge
         return
       else:
-        pobri.post_pr_message(
+        probri.post_pr_message(
           job_result['source']['organization'],
           job_result['source']['name'],
           job_result['pr'],
