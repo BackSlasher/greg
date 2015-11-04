@@ -8,9 +8,6 @@ import greg.bridge_provider
 import greg.bridge_builder
 
 class TestLogic(unittest.TestCase):
-    # Test list:
-    # build - failed merge
-    # build - passed merge
     @mock.patch('greg.bridge_provider')
     @mock.patch('greg.bridge_builder')
     def test_test(self,bridge_builder_mock,bridge_provider_mock):
