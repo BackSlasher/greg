@@ -41,6 +41,14 @@ class BridgeProviderBitbucket(BridgeProvider):
       commit = self.get_commit_json(organization, name, commit)
       return any(p['approved'] and p['user']['username']==self.username for p in commit['participants']) #TODO handle cases where email is provided instead of username
 
+  def post_commit_comment(self,organization,name,commit,content):
+      return self.api('1.0',"repositories/%s/%s/changesets/%s/comments"%(organization, name, commit),{'content': content},'post')
+
+  def post_pr_comment(self,organization,name,pr_id,content):
+      return self.api('1.0',"repositories/%s/%s/pullrequests/%s/comments"%(organization, name, pr_id),{'content': content},'post')
+
+  def set_commit_approval(self,organization,name,commit,is_approved):
+      return self.api('2.0',"repositories/%s/%s/commit/%s/approve"%(organization, name, commit),method=( 'post' if is_approved else 'delete'))
 
   def __init__(self, dic):
     self.username=dic['username']
@@ -104,3 +112,12 @@ class BridgeProviderBitbucket(BridgeProvider):
       pass
 
     return ret
+
+    def post_commit_test(self, organization, name, commit, builder_type, url, result):
+      self.post_commit_comment(organization, name, commit,"Test by %s: **%s**  \n%s"%(builder_type,('passed' if result else 'failed'),url))
+      #XXX only supporting a single builder
+      self.set_commit_approval(organization, name, commit, result)
+
+    #TODO rename?
+    def post_pr_message(self, organization, name, pr, message):
+      self.post_pr_comment(organization,name,pr, message)
