@@ -28,7 +28,7 @@ class BridgeProviderBitbucket(BridgeProvider):
     return body
 
   def api(self,version,path,form_data={},method=None,request_type=None):
-    uri="https://api.bitbucket.org/%d/%s" %(version,path)
+    uri="https://api.bitbucket.org/%s/%s" %(version,path)
     return self.api_raw(uri,form_data,method,request_type)
 
   def get_pr_json(self, organization, name, pr_id):
@@ -56,7 +56,7 @@ class BridgeProviderBitbucket(BridgeProvider):
     self.incoming_token=dic['incoming_token']
 
   def parse_payload(self, body, params={}):
-    method=params['X_EVENT_KEY'] # request.env['HTTP_X_EVENT_KEY']
+    method=params['X-Event-Key'] # request.env['HTTP_X_EVENT_KEY']
     # Can be either pullrequest:comment_created or repo:push
     body = json.loads(body)
     repo_org = body['repository']['owner']['username']
