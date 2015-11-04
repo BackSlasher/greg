@@ -88,8 +88,8 @@ class BridgeProviderBitbucket(BridgeProvider):
           'type': 'pr:comment',
           'pr': {
             'id': pr_id,
-            'src_branch': pr_source['branch'],
-            'dst_branch': pr_dest['branch'],
+            'src_branch': pr_source['branch']['name'],
+            'dst_branch': pr_dest['branch']['name'],
             'same_repo': pr_same_repo,
             'reviewers': reviewers,
             'approvers': approvers,
