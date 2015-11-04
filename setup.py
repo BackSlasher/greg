@@ -92,7 +92,7 @@ setup(
     #TODO testing tools?
     extras_require={
         'dev': [''],
-        'test': [''],
+        'test': ['responses','mock'],
     },
 
     # If there are data files included in your packages that need to be
