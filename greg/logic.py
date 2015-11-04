@@ -1,6 +1,6 @@
 
 import greg.bridge_builder
-# import greg.bridge_provider
+import greg.bridge_provider
 # Conatins all functions used to respond to events
 
 def repo(payload):
