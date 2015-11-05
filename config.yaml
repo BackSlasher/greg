@@ -1,7 +1,7 @@
 # Config file example for Greg
 
 providers:
-  bitbucket.org:
+  bitbucket:
     username: blabla
     password: blublu
     incoming_token: abcd
