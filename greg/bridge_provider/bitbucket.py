@@ -113,11 +113,11 @@ class BridgeProviderBitbucket(BridgeProvider):
 
     return ret
 
-    def post_commit_test(self, organization, name, commit, builder_type, url, result):
+  def post_commit_test(self, organization, name, commit, builder_type, url, result):
       self.post_commit_comment(organization, name, commit,"Test by %s: **%s**  \n%s"%(builder_type,('passed' if result else 'failed'),url))
       #XXX only supporting a single builder
       self.set_commit_approval(organization, name, commit, result)
 
-    #TODO rename?
-    def post_pr_message(self, organization, name, pr, message):
+  #TODO rename?
+  def post_pr_message(self, organization, name, pr, message):
       self.post_pr_comment(organization,name,pr, message)
