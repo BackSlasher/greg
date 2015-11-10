@@ -6,11 +6,51 @@ from mock import MagicMock
 from greg.bridge_provider.bitbucket import BridgeProviderBitbucket
 
 class TestBridgeProviderBitbucket(unittest.TestCase):
-  # test list:
   # posting comment for pr
+  def test_pr_comment(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api = MagicMock()
+    testee.post_pr_comment('bla','blu','1','hi')
+    testee.api.assert_called_once_with('1.0','repositories/bla/blu/pullrequests/1/comments',{'content':'hi'}, 'post')
+
   # posting comment for commit
+  def test_commit_comment(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api = MagicMock()
+    testee.post_commit_comment('bla','blu','1','hello')
+    testee.api.assert_called_once_with('1.0','repositories/bla/blu/changesets/1/comments',{'content':'hello'}, 'post')
   # approving commit
+
+  def test_commit_approve(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api = MagicMock()
+    testee.set_commit_approval('bla','blu','1',True)
+    testee.api.assert_called_once_with('2.0','repositories/bla/blu/commit/1/approve',method='post')
+
   # disapproving commit
+  def test_commit_disapprove(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api = MagicMock()
+    testee.set_commit_approval('bla','blu','1',False)
+    testee.api.assert_called_once_with('2.0','repositories/bla/blu/commit/1/approve',method='delete')
+
+
   # reporting a test result
   def test_commit_test(self):
     testee = BridgeProviderBitbucket({
