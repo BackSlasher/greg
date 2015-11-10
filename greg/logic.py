@@ -1,16 +1,44 @@
-
+import re
+import collections
 import greg.bridge_builder
 import greg.bridge_provider
 # Conatins all functions used to respond to events
 
-def repo(payload):
+# Whether a job is allowed to merge
+def allowed_merge(payload):
+  ret_type = collections.namedtuple('merge_review', ['allowed','reason'])
+  # Same repo (source and target)
+  if not payload['event']['pr']['same_repo']: return ret_type(False,'Source repo isnt identical to target repo')
+  # TODO My repo (not targeting foreign repo somehow)
+  # All reviewers are OK with merging
+  missing_approvers = payload['event']['pr']['reviewers'] - payload['event']['pr']['approvers']
+  if missing_approvers: return ret_type(False, 'Missing approvals from: %s'%(missing_approvers))
+  # Testing passed fine
+  if not payload['event']['pr']['code_ok']: return ret_type(False, 'Code did not pass validation')
+  # No objections:
+  return ret_type(True,'')
+
+def repo(provider_type,payload,params={}):
   # Parse payload
+  probri = greg.bridge_provider.locate_bridge(provider_type)
+  payload = probri.parse_payload(payload,params)
   # Get action (comment / push)
-  # If comment, then:
-  #    If "greg please" then start merge procedure
-  #    If "greg OK?" then check merge prereqs, but answer "yes" or "no" in comment
-  # If push, then
-  #  Invoke test job if any
+  if payload['event']['type'] == 'pr:comment': # Comment
+    escaped_string = re.sub('[^a-z]+','',payload['event']['text']).lower()
+    if  escaped_string == 'gregplease': # Greg please
+      pass
+      # Start merge procedure if existed and allowed
+    elif escaped_string == 'gregok': # Greg OK
+      # Print merge prereqs and print message
+      pass
+    else:
+      #TODO log ignoring
+      pass
+  elif payload['event']['type'] == 'push': # Commit push
+      # Invoke test job if any
+      pass
+  else:
+      raise Exception('No such event type "%s"' % payload['event']['type'])
   print 'not yet'
 
 def build(builder_type,body,params={}):
