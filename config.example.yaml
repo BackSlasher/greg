@@ -2,8 +2,8 @@
 
 providers:
   bitbucket:
-    username: blabla
-    password: blublu
+    username: devops+greg@dynamicyield.com
+    password: UZhdYDc71anxGT$JYN&5
     incoming_token: abcd
   github.com:
     username: fafaf
