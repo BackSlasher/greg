@@ -2,8 +2,8 @@
 
 providers:
   bitbucket:
-    username: blabla
-    password: blublu
+    username: someuser
+    password: pass
     incoming_token: abcd
   github.com:
     username: fafaf
@@ -18,14 +18,14 @@ builders:
 repos:
   - names:
     - /^chef-/
-    organizations: [dy-devops]
+    organizations: [ownerrr]
     provider: bitbucket
     jobs:
       test: {name: cookbook-test}
       merge: {name: cookbook-merge}
   - names:
     - firewall
-    organizations: [dy-devops]
+    organizations: [ownerrr]
     provider: bitbucket
     jobs:
       test: {name: verify-rubocop}
