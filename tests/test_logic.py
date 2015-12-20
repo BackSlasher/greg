@@ -75,7 +75,12 @@ class TestLogic(unittest.TestCase):
         probri.post_commit_test.assert_not_called()
 
     def test_allowed_merge_different_repo(self):
-        payload = {'event': {'pr': {'same_repo': False}}}
+        payload = {'event': {'pr': {
+            'same_repo': False,
+            'reviewers': ['alfred', 'bonnie'],
+            'approvers': ['alfred', 'sansa', 'bonnie'],
+            'code_ok': True,
+            }}}
         # This should fail on non-identical repos
         res = greg.logic.allowed_merge(payload)
         self.assertEqual(res[0],False)
@@ -85,6 +90,7 @@ class TestLogic(unittest.TestCase):
             'same_repo': True,
             'reviewers': ['alfred', 'bonnie'],
             'approvers': ['alfred', 'sansa'],
+            'code_ok': True,
             }}}
         # This should fail on missing approval from bonnie
         res = greg.logic.allowed_merge(payload)
@@ -110,5 +116,4 @@ class TestLogic(unittest.TestCase):
             }}}
         # Should pass
         res = greg.logic.allowed_merge(payload)
-        print res
         self.assertEqual(res[0],True)
