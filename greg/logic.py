@@ -18,6 +18,7 @@ def allowed_merge(payload):
   # No objections:
   return ret_type(True,'')
 
+# Called from the repository's webhooks
 def repo(provider_type,payload,params={}):
   # Parse payload
   probri = greg.bridge_provider.locate_bridge(provider_type)
@@ -41,6 +42,7 @@ def repo(provider_type,payload,params={}):
       raise Exception('No such event type "%s"' % payload['event']['type'])
   print 'not yet'
 
+# Called from the build server
 def build(builder_type,body,params={}):
   # Find builder bridge and parse job
   bubri = greg.bridge_builder.locate_bridge(builder_type)
