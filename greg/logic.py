@@ -6,17 +6,22 @@ import greg.bridge_provider
 
 # Whether a job is allowed to merge
 def allowed_merge(payload):
-  ret_type = collections.namedtuple('merge_review', ['allowed','reason'])
+  issues=[]
+  ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
   # Same repo (source and target)
-  if not payload['event']['pr']['same_repo']: return ret_type(False,'Source repo isnt identical to target repo')
+  if not payload['event']['pr']['same_repo']:
+      issues.append('Source repo isnt identical to target repo')
   # TODO My repo (not targeting foreign repo somehow)
   # All reviewers are OK with merging
   missing_approvers = set(payload['event']['pr']['reviewers']) - set(payload['event']['pr']['approvers'])
-  if missing_approvers: return ret_type(False, 'Missing approvals from: %s'%(missing_approvers))
+  if missing_approvers:
+      issues.append('Missing approvals from: %s'%(missing_approvers))
   # Testing passed fine
-  if not payload['event']['pr']['code_ok']: return ret_type(False, 'Code did not pass validation')
-  # No objections:
-  return ret_type(True,'')
+  if not payload['event']['pr']['code_ok']:
+      issues.append('Code did not pass validation')
+
+  # Judgement
+  return ret_type(not any(issues),issues)
 
 # Called from the repository's webhooks
 def repo(provider_type,payload,params={}):
