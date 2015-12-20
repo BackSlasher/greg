@@ -73,3 +73,42 @@ class TestLogic(unittest.TestCase):
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_not_called()
         probri.post_commit_test.assert_not_called()
+
+    def test_allowed_merge_different_repo(self):
+        payload = {'event': {'pr': {'same_repo': False}}}
+        # This should fail on non-identical repos
+        res = greg.logic.allowed_merge(payload)
+        self.assertEqual(res[0],False)
+
+    def test_allowed_merge_missing_approvers(self):
+        payload = {'event': {'pr': {
+            'same_repo': True,
+            'reviewers': ['alfred', 'bonnie'],
+            'approvers': ['alfred', 'sansa'],
+            }}}
+        # This should fail on missing approval from bonnie
+        res = greg.logic.allowed_merge(payload)
+        self.assertEqual(res[0],False)
+
+    def test_allowed_merge_bad_code(self):
+        payload = {'event': {'pr': {
+            'same_repo': True,
+            'reviewers': [],
+            'approvers': [],
+            'code_ok': False,
+            }}}
+        # Should fail over bad code
+        res = greg.logic.allowed_merge(payload)
+        self.assertEqual(res[0],False)
+
+    def test_allowed_merge_bad_code(self):
+        payload = {'event': {'pr': {
+            'same_repo': True,
+            'reviewers': ['alfred', 'bonnie'],
+            'approvers': ['alfred', 'sansa', 'bonnie'],
+            'code_ok': True,
+            }}}
+        # Should pass
+        res = greg.logic.allowed_merge(payload)
+        print res
+        self.assertEqual(res[0],True)
