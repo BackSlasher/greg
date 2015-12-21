@@ -117,3 +117,90 @@ class TestLogic(unittest.TestCase):
         # Should pass
         res = greg.logic.allowed_merge(payload)
         self.assertEqual(res[0],True)
+
+    @mock.patch('greg.config')
+    @mock.patch('greg.bridge_provider')
+    def test_merge_no_job(self, greg_bridge_provider_mock, greg_config_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'greg please',
+                    },
+                }
+        config = greg_config_mock.get_config.return_value
+        config.get_job.return_value = None
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(True,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_called_once_with('it','off','No merge job found. Merge manually?')
+
+    @mock.patch('greg.bridge_provider')
+    def test_merge_not_allowed(self, greg_bridge_provider_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'greg please',
+                    },
+                }
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(False,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_called_once_with('it','off','**Will not merge**  \n')
+
+    @mock.patch('greg.config')
+    @mock.patch('greg.bridge_provider')
+    @mock.patch('greg.bridge_builder')
+    def test_merge_allow(self, greg_bridge_builder_mock, greg_bridge_provider_mock, greg_config_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'greg please',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
+                    },
+                }
+        config = greg_config_mock.get_config.return_value
+        config.get_job.return_value = collections.namedtuple('Job',['name','builder'])('yugi','oh')
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(True,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_not_called()
+        greg_bridge_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with('yugi', {
+            'PROVIDER': 'shake',
+            'USER': 'it',
+            'REPO': 'off',
+            'COMMIT': 'donald',
+            'TARGET_BRANCH': 'duck',
+            'PR': 1,
+            'REPORT': True,
+            })
