@@ -71,7 +71,7 @@ def repo(provider_type,payload,params={}):
           probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Ready to merge**')
       else:
           reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
-          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '*Not Ready to merge**  \n'+reason_list)
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Not ready to merge**  \n'+reason_list)
     else:
       #TODO log ignoring
       pass
