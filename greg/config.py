@@ -80,9 +80,11 @@ class Config:
   def get_repo_config(self, provider, organization, name):
     return next((rc for rc in self.repos if rc.match(provider, organization, name)),None)
 
+  # Get job type for a repo.
+  # Handle missing jobs by returning None
   def get_job(self, provider, organization, name, job_type):
     repo_config = self.get_repo_config(provider, organization, name)
-    return repo_config.jobs[job_type]
+    return repo_config.jobs.get(job_type,None)
 
 config=None
 #TODO make it a proper method?
