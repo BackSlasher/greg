@@ -2,6 +2,7 @@ import re
 import collections
 import greg.bridge_builder
 import greg.bridge_provider
+import greg.config
 # Conatins all functions used to respond to events
 
 # Whether a job is allowed to merge
@@ -28,24 +29,77 @@ def repo(provider_type,payload,params={}):
   # Parse payload
   probri = greg.bridge_provider.locate_bridge(provider_type)
   payload = probri.parse_payload(payload,params)
+  config = greg.config.get_config()
   # Get action (comment / push)
   if payload['event']['type'] == 'pr:comment': # Comment
     escaped_string = re.sub('[^a-z]+','',payload['event']['text']).lower()
     if  escaped_string == 'gregplease': # Greg please
-      pass
-      # TODO Start merge procedure if existed and allowed
+      merge_check = allowed_merge(payload)
+      if merge_check.allowed:
+          # Find the correct job to run
+          merge_job = config.get_job(
+                  payload['repo']['provider'],
+                  payload['repo']['organization'],
+                  payload['repo']['name'],
+                  'merge'
+                  )
+          if merge_job:
+              # Start merge job
+              builbri = greg.bridge_builder.locate_bridge(merge_job.builder)
+              #TODO document parameters better
+              builbri.start_build(merge_job.name,{
+                  'PROVIDER': payload['repo']['provider'],
+                  'USER': payload['repo']['organization'],
+                  'REPO': payload['repo']['name'],
+                  # TODO merge from specifc commit and not branch name
+                  'COMMIT': payload['event']['pr']['src_branch'],
+                  'TARGET_BRANCH': payload['event']['pr']['dst_branch'],
+                  'PR': payload['event']['pr']['id'],
+                  'REPORT': True,
+                  })
+              #TODO write a message that build started?
+          else:
+              # Notify that we don't have a merge job
+              probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], 'No merge job found. Merge manually?')
+      else:
+          # Notify that we won't merge because issues
+          reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Will not merge**  \n'+reason_list)
     elif escaped_string == 'gregok': # Greg OK
-      # TODO Print merge prereqs and print message
-      pass
+      merge_check = allowed_merge(payload)
+      if merge_check.allowed:
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Ready to merge**')
+      else:
+          reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '*Not Ready to merge**  \n'+reason_list)
     else:
       #TODO log ignoring
       pass
   elif payload['event']['type'] == 'push': # Commit push
-      # TODO Invoke test job if any
-      pass
+      test_job = config.get_job(
+              payload['repo']['provider'],
+              payload['repo']['organization'],
+              payload['repo']['name'],
+              'test'
+              )
+      if test_job:
+          builbri = greg.bridge_builder.locate_bridge(test_job.builder)
+          for change in payload['event']['changes']:
+              builbri.start_build(test_job.name, {
+                  'PROVIDER': payload['repo']['provider'],
+                  'USER': payload['repo']['organization'],
+                  'REPO': payload['repo']['name'],
+                  # TODO merge from specifc commit and not branch name
+                  'COMMIT': change['commit'],
+                  'REPORT': True,
+                  })
+      else:
+          #TODO log ignoring because no test job
+          pass
+
   else:
+      # No matching event, can't do anything
       raise Exception('No such event type "%s"' % payload['event']['type'])
-  print 'not yet'
 
 # Called from the build server
 def build(builder_type,body,params={}):
