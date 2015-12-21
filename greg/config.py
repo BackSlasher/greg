@@ -3,6 +3,12 @@ import yaml
 
 # Holds configuration data for our application
 
+class JobConfig:
+  def __init__(self, dictionary):
+    self.name = dictionary['name']
+    self.builder = dictionary['builder']
+
+
 class RepoConfig:
   # provider: One of github, bitbucket
   # organizations: List of organizations (users) to search repos in
@@ -15,10 +21,10 @@ class RepoConfig:
     self.names_regexps = set()
     for n in names:
       if n[0]=='/' and n[-1]=='/': #regex
-        self.names_regexps.add(n[2:-2])
+        self.names_regexps.add(re.compile(n[1:-1]))
       else:
         self.names.add(n)
-    self.jobs=jobs #TODO make sure that it's a valid hash
+    self.jobs = { k:JobConfig(v) for k,v in jobs.iteritems() }
 
   # Parses dictionary to a new repoconfig
   @staticmethod
