@@ -204,3 +204,92 @@ class TestLogic(unittest.TestCase):
             'PR': 1,
             'REPORT': True,
             })
+
+    @mock.patch('greg.bridge_provider')
+    def test_ok_notok(self, greg_bridge_provider_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'greg ok',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
+                    },
+                }
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(False,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_called_with('it','off','**Not ready to merge**  \n')
+
+    @mock.patch('greg.bridge_provider')
+    def test_ok_reallyok(self, greg_bridge_provider_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'greg ok',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
+                    },
+                }
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(True,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_called_with('it','off','**Ready to merge**')
+
+    @mock.patch('greg.config')
+    @mock.patch('greg.bridge_provider')
+    @mock.patch('greg.bridge_builder')
+    def test_test_nojob(self, greg_bridge_builder_mock, greg_bridge_provider_mock, greg_config_mock):
+        import collections
+        probri = greg_bridge_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'push',
+                    'changes': [
+                        {'commit':'b33f'},
+                        ],
+                }
+            }
+        config = greg_config_mock.get_config.return_value
+        config.get_job.return_value = collections.namedtuple('Job',['name','builder'])('yugi','oh')
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(True,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_not_called()
+        greg_bridge_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with('yugi', {
+            'PROVIDER': 'shake',
+            'USER': 'it',
+            'REPO': 'off',
+            'COMMIT': 'b33f',
+            'REPORT': True,
+            })
