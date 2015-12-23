@@ -25,10 +25,10 @@ def allowed_merge(payload):
   return ret_type(not any(issues),issues)
 
 # Called from the repository's webhooks
-def repo(provider_type,payload,params={}):
+def repo(provider_type,payload,headers={},querystring={}):
   # Parse payload
   probri = greg.bridge_provider.locate_bridge(provider_type)
-  payload = probri.parse_payload(payload,params)
+  payload = probri.parse_payload(payload,headers,querystring)
   config = greg.config.get_config()
   # Get action (comment / push)
   if payload['event']['type'] == 'pr:comment': # Comment
@@ -102,10 +102,10 @@ def repo(provider_type,payload,params={}):
       raise Exception('No such event type "%s"' % payload['event']['type'])
 
 # Called from the build server
-def build(builder_type,body,params={}):
+def build(builder_type,body,headers={},querystring={}):
   # Find builder bridge and parse job
   bubri = greg.bridge_builder.locate_bridge(builder_type)
-  job_result = bubri.parse_payload(body,params)
+  job_result = bubri.parse_payload(body,headers,querystring)
   #TODO find provider bridge
   probri = greg.bridge_provider.locate_bridge_by_url(job_result['source']['provider'])
   # return if job is not to be reported

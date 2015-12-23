@@ -5,7 +5,7 @@ import greg.config
 class BridgeBuilder:
   def __init__(self, dic):
     pass
-  def parse_payload(self, body,params):
+  def parse_payload(self, body,headers={},querystring={}):
     pass
   # TODO harden structure (like (job_name, source_repo, source_commit))
   def start_build(self, job_name, params={}):

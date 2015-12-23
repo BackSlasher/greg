@@ -5,7 +5,7 @@ import greg.config
 class BridgeProvider:
   def __init__(self, dic):
     pass
-  def parse_payload(self, body, params={}):
+  def parse_payload(self, body, headers={}, querystring={}):
     pass
   def post_commit_test(self, organization, name, commit, builder_type, url, result):
     pass

@@ -26,12 +26,12 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
         'password': 'grog',
         'incoming_token': 'hi',
         })
-    params = {
+    querystring = {
             'token': 'hi',
             }
 
     body ='{"name":"cookbook-test","url":"job/cookbook-test/","build":{"full_url":"http://build1.use.dynamicyield.com:8080/job/cookbook-test/3885/","number":3885,"phase":"COMPLETED","status":"UNSTABLE","url":"job/cookbook-test/3885/","scm":{"url":"git@bitbucket.org:dy-devops/chef-dy-spark.git","branch":"origin/master","commit":"5fd7ed5ea61ff8dab124d17c1c7dd23917f26ed3"},"parameters":{"SOURCE":"git@bitbucket.org:dy-devops/chef-dy-spark.git","COMMIT":"master","REPORT":"true","CONTEXT":"test"},"log":"","artifacts":{}}}'
-    res=testee.parse_payload(body,params)
+    res=testee.parse_payload(body,{},querystring)
     self.assertEqual(res['name'], 'cookbook-test')
     self.assertEqual(res['done'], True)
     self.assertEqual(res['good'], True)

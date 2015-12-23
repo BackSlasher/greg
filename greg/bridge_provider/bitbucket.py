@@ -55,8 +55,8 @@ class BridgeProviderBitbucket(BridgeProvider):
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']
 
-  def parse_payload(self, body, params={}):
-    method=params['X-Event-Key'] # request.env['HTTP_X_EVENT_KEY']
+  def parse_payload(self, body, headers={}, querystring={}):
+    method=headers['X-Event-Key'] # request.env['HTTP_X_EVENT_KEY']
     # Can be either pullrequest:comment_created or repo:push
     body = json.loads(body)
     repo_org = body['repository']['owner']['username']
