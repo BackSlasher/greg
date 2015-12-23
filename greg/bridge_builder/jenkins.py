@@ -18,9 +18,9 @@ class BridgeBuilderJenkins(BridgeBuilder):
     self.password = dic['password']
     self.incoming_token = dic['incoming_token']
 
-  def parse_payload(self, body,params={}):
+  def parse_payload(self, body,headers={},querystring={}):
     # Verify token
-    presented_token=params['token']
+    presented_token=querystring['token']
     if self.incoming_token != presented_token: raise Exception('Bad token')
     body=json.loads(body)
     job_name=body['name']
