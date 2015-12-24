@@ -14,9 +14,9 @@ class BridgeProvider:
 
 def locate_bridge(provider_type):
   if provider_type == 'bitbucket':
-    import greg.bridge_provider.bitbucket
+    import greg.provider.bitbucket
     dic = greg.config.get_config().providers['bitbucket']
-    return greg.bridge_provider.bitbucket.BridgeProviderBitbucket(dic)
+    return greg.provider.bitbucket.BridgeProviderBitbucket(dic)
   else:
     raise Exception('no such bridge')
 

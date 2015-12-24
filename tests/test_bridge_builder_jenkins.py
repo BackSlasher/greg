@@ -1,11 +1,11 @@
-# testing greg.bridge_builder.jenkins
+# testing greg.builder.jenkins
 
 import unittest
 
 class TestBridgeBuilderJenkins(unittest.TestCase):
   # parse_repo parses git@bla urls
   def test_parse_repo(self):
-    from greg.bridge_builder.jenkins import BridgeBuilderJenkins
+    from greg.builder.jenkins import BridgeBuilderJenkins
     testee = BridgeBuilderJenkins({
         'url':'http://wow.com',
         'username': 'greg',
@@ -19,7 +19,7 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
 
   # parse_payload works with exmaple data
   def test_parse_payload(self):
-    from greg.bridge_builder.jenkins import BridgeBuilderJenkins
+    from greg.builder.jenkins import BridgeBuilderJenkins
     testee = BridgeBuilderJenkins({
         'url':'http://wow.com',
         'username': 'greg',

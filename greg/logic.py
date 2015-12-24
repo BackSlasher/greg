@@ -1,7 +1,7 @@
 import re
 import collections
-import greg.bridge_builder
-import greg.bridge_provider
+import greg.builder
+import greg.provider
 import greg.config
 # Conatins all functions used to respond to events
 
@@ -27,7 +27,7 @@ def allowed_merge(payload):
 # Called from the repository's webhooks
 def repo(provider_type,payload,headers={},querystring={}):
   # Parse payload
-  probri = greg.bridge_provider.locate_bridge(provider_type)
+  probri = greg.provider.locate_bridge(provider_type)
   payload = probri.parse_payload(payload,headers,querystring)
   config = greg.config.get_config()
   # Get action (comment / push)
@@ -45,7 +45,7 @@ def repo(provider_type,payload,headers={},querystring={}):
                   )
           if merge_job:
               # Start merge job
-              builbri = greg.bridge_builder.locate_bridge(merge_job.builder)
+              builbri = greg.builder.locate_bridge(merge_job.builder)
               #TODO document parameters better
               builbri.start_build(merge_job.name,{
                   'PROVIDER': payload['repo']['provider'],
@@ -83,7 +83,7 @@ def repo(provider_type,payload,headers={},querystring={}):
               'test'
               )
       if test_job:
-          builbri = greg.bridge_builder.locate_bridge(test_job.builder)
+          builbri = greg.builder.locate_bridge(test_job.builder)
           for change in payload['event']['changes']:
               builbri.start_build(test_job.name, {
                   'PROVIDER': payload['repo']['provider'],
@@ -104,10 +104,10 @@ def repo(provider_type,payload,headers={},querystring={}):
 # Called from the build server
 def build(builder_type,body,headers={},querystring={}):
   # Find builder bridge and parse job
-  bubri = greg.bridge_builder.locate_bridge(builder_type)
+  bubri = greg.builder.locate_bridge(builder_type)
   job_result = bubri.parse_payload(body,headers,querystring)
   #TODO find provider bridge
-  probri = greg.bridge_provider.locate_bridge_by_url(job_result['source']['provider'])
+  probri = greg.provider.locate_bridge_by_url(job_result['source']['provider'])
   # return if job is not to be reported
   if not job_result['report']:
       #TODO log that skipping job
