@@ -83,6 +83,7 @@ setup(
     install_requires=[
             'pyyaml',
             'requests',
+            'flask',
             ], #TODO complete
 
     # List additional groups of dependencies here (e.g. development
