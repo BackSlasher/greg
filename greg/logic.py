@@ -25,9 +25,9 @@ def allowed_merge(payload):
   return ret_type(not any(issues),issues)
 
 # Called from the repository's webhooks
-def repo(provider_type,payload,headers={},querystring={}):
+def repo(provider,payload,headers={},querystring={}):
   # Parse payload
-  probri = greg.provider.locate_bridge(provider_type)
+  probri = greg.provider.locate_bridge(provider)
   payload = probri.parse_payload(payload,headers,querystring)
   config = greg.config.get_config()
   # Get action (comment / push)
