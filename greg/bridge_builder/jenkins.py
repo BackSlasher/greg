@@ -1,7 +1,7 @@
 #TODO import upper, like `import ..`?
 
 from greg.bridge_builder import BridgeBuilder
-import urllib2
+import requests
 import json
 import re
 
@@ -50,3 +50,8 @@ class BridgeBuilderJenkins(BridgeBuilder):
         'target': job_target,
         'url': job_url,
         }
+
+  def start_build(self, job_name, params={}):
+    url = '%s/job/%s/buildWithParameters' % (self.url,job_name)
+    resp = requests.request(url=url, method='POST', params=params, auth=(self.username, self.password))
+    resp.raise_for_status() # Raise error in case it fails
