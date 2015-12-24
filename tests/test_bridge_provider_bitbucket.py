@@ -72,15 +72,17 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'password': 'grog',
       'incoming_token': 'glig',
       })
-    params ={
+    headers={
         'X-Event-Key': 'repo:push',
+        }
+    querystring={
         'token': 'glig',
         }
     body_path = os.path.join(os.path.dirname(__file__), 'responses/bitbucket_code_push.txt')
     with open (body_path) as myfile:
         body=myfile.read()
 
-    res = testee.parse_payload(body,params)
+    res = testee.parse_payload(body,headers,querystring)
     self.assertEqual(res['repo']['provider'],'bitbucket')
     self.assertEqual(res['repo']['organization'],'dy-devops')
     self.assertEqual(res['repo']['name'],'janitor-starter')
@@ -96,8 +98,10 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'password': 'grog',
       'incoming_token': 'glig',
       })
-    params ={
+    headers={
         'X-Event-Key': 'pullrequest:comment_created',
+        }
+    querystring={
         'token': 'glig',
         }
     body_path = os.path.join(os.path.dirname(__file__), 'responses/bitbucket_pr_comment.txt')
@@ -105,7 +109,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
         body=myfile.read()
 
     testee.commit_code_ok = MagicMock(return_value=True)
-    res = testee.parse_payload(body,params)
+    res = testee.parse_payload(body,headers,querystring)
     self.assertEqual(res['repo']['provider'],'bitbucket')
     self.assertEqual(res['repo']['organization'],'dy-devops')
     self.assertEqual(res['repo']['name'],'janitor-starter')
