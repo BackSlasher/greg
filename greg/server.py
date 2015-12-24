@@ -23,5 +23,8 @@ def build():
 def root():
   return 'I am Greg'
 
+def run():
+  app.run()
+
 if __name__ == '__main__':
-    app.run()
+    run()
