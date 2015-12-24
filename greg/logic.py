@@ -102,9 +102,9 @@ def repo(provider,payload,headers={},querystring={}):
       raise Exception('No such event type "%s"' % payload['event']['type'])
 
 # Called from the build server
-def build(builder_type,body,headers={},querystring={}):
+def build(builder,body,headers={},querystring={}):
   # Find builder bridge and parse job
-  bubri = greg.builder.locate_bridge(builder_type)
+  bubri = greg.builder.locate_bridge(builder)
   job_result = bubri.parse_payload(body,headers,querystring)
   #TODO find provider bridge
   probri = greg.provider.locate_bridge_by_url(job_result['source']['provider'])
@@ -128,7 +128,7 @@ def build(builder_type,body,headers={},querystring={}):
       job_result['source']['organization'],
       job_result['source']['name'],
       job_result['source']['commit'],
-      builder_type=builder_type,
+      builder=builder,
       url=job_result['url'],
       result=job_result['good'],
     )

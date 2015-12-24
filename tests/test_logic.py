@@ -28,7 +28,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_not_called()
         probri.post_commit_test.assert_called_once_with('bla', 'blu', 'bli',
-                builder_type='jenkins', url='glog', result=False)
+                builder='jenkins', url='glog', result=False)
 
     @mock.patch('greg.provider')
     @mock.patch('greg.builder')
