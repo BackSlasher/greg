@@ -1,6 +1,6 @@
 #TODO import upper, like `import ..`?
 
-from greg.bridge_builder import BridgeBuilder
+from greg.builder import BridgeBuilder
 import requests
 import json
 import re

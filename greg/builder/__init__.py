@@ -13,8 +13,8 @@ class BridgeBuilder:
 
 def locate_bridge(builder_type):
   if builder_type == 'jenkins':
-    import greg.bridge_builder.jenkins
+    import greg.builder.jenkins
     dic = greg.config.get_config().builders['jenkins']
-    return greg.bridge_builder.jenkins.BridgeBuilderJenkins(dic)
+    return greg.builder.jenkins.BridgeBuilderJenkins(dic)
   else:
     raise Exception('no such bridge')

@@ -1,5 +1,5 @@
 
-from greg.bridge_provider import BridgeProvider
+from greg.provider import BridgeProvider
 import requests
 import json
 
@@ -56,6 +56,10 @@ class BridgeProviderBitbucket(BridgeProvider):
     self.incoming_token=dic['incoming_token']
 
   def parse_payload(self, body, headers={}, querystring={}):
+    presented_token=querystring['token']
+    # Verify token
+    if self.incoming_token != presented_token: raise Exception('Bad token')
+    # Deduce method
     method=headers['X-Event-Key'] # request.env['HTTP_X_EVENT_KEY']
     # Can be either pullrequest:comment_created or repo:push
     body = json.loads(body)

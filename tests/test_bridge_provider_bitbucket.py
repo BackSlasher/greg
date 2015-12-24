@@ -1,9 +1,9 @@
-  # testing greg.bridge_provider.bitbucket
+  # testing greg.provider.bitbucket
 
 import os
 import unittest
 from mock import MagicMock
-from greg.bridge_provider.bitbucket import BridgeProviderBitbucket
+from greg.provider.bitbucket import BridgeProviderBitbucket
 
 class TestBridgeProviderBitbucket(unittest.TestCase):
   # posting comment for pr
