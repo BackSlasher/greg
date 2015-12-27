@@ -1,4 +1,4 @@
-.PHONY: test prep
+.PHONY: test prep clean
 
 test:
 	. bin/activate
@@ -8,3 +8,7 @@ test:
 
 prep:
 	pip freeze | grep -v '^-e' | tee requirements.txt >/dev/null
+	zip greg.zip -r application.py config.yaml greg setup.py requirements.txt README.rst
+
+clean:
+	rm -f requirements.txt greg.zip
