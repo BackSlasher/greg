@@ -1,7 +1,7 @@
 import greg.logic
 from flask import Flask, request
 
-app = Flask(__name__)
+app = Flask('application')
 
 # Called by the repository (github / bitbucket) whenever there's a commit / comment
 @app.route('/repo')
