@@ -1,5 +1,7 @@
 # My stuff
 /config.yaml
+/greg.zip
+/requirements.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
