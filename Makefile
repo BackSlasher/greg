@@ -7,6 +7,9 @@ test:
 	pylint greg -E ;\
 	python -m unittest discover -s tests
 
+localserver:
+	bin/python -m greg.server
+
 prep:
 	set -e ;\
 	. bin/activate ;\
