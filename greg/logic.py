@@ -60,18 +60,18 @@ def repo(provider,payload,headers={},querystring={}):
               #TODO write a message that build started?
           else:
               # Notify that we don't have a merge job
-              probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], 'No merge job found. Merge manually?')
+              probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='No merge job found. Merge manually?')
       else:
           # Notify that we won't merge because issues
           reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
-          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Will not merge**  \n'+reason_list)
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Will not merge**  \n'+reason_list)
     elif escaped_string == 'gregok': # Greg OK
       merge_check = allowed_merge(payload)
       if merge_check.allowed:
-          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Ready to merge**')
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Ready to merge**')
       else:
           reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
-          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], '**Not ready to merge**  \n'+reason_list)
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Not ready to merge**  \n'+reason_list)
     else:
       #TODO log ignoring
       pass
@@ -128,7 +128,7 @@ def build(builder,body,headers={},querystring={}):
       job_result['source']['organization'],
       job_result['source']['name'],
       job_result['source']['commit'],
-      builder=builder,
+      builder_type=builder,
       url=job_result['url'],
       result=job_result['good'],
     )
