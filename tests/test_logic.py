@@ -28,7 +28,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_not_called()
         probri.post_commit_test.assert_called_once_with('bla', 'blu', 'bli',
-                builder='jenkins', url='glog', result=False)
+                builder_type='jenkins', url='glog', result=False)
 
     @mock.patch('greg.provider')
     @mock.patch('greg.builder')
@@ -132,6 +132,11 @@ class TestLogic(unittest.TestCase):
                 'event': {
                     'type': 'pr:comment',
                     'text': 'greg please',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
                     },
                 }
         config = greg_config_mock.get_config.return_value
@@ -141,7 +146,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.allowed_merge = lambda x: ret_type(True,[])
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
-        probri.post_pr_message.assert_called_once_with('it','off','No merge job found. Merge manually?')
+        probri.post_pr_message.assert_called_once_with('it','off',1, message='No merge job found. Merge manually?')
 
     @mock.patch('greg.provider')
     def test_merge_not_allowed(self, greg_provider_mock):
@@ -156,6 +161,11 @@ class TestLogic(unittest.TestCase):
                 'event': {
                     'type': 'pr:comment',
                     'text': 'greg please',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
                     },
                 }
         ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
@@ -163,7 +173,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.allowed_merge = lambda x: ret_type(False,[])
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
-        probri.post_pr_message.assert_called_once_with('it','off','**Will not merge**  \n')
+        probri.post_pr_message.assert_called_once_with('it','off',1, message='**Will not merge**  \n')
 
     @mock.patch('greg.config')
     @mock.patch('greg.provider')
@@ -230,7 +240,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.allowed_merge = lambda x: ret_type(False,[])
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
-        probri.post_pr_message.assert_called_with('it','off','**Not ready to merge**  \n')
+        probri.post_pr_message.assert_called_with('it','off',1, message='**Not ready to merge**  \n')
 
     @mock.patch('greg.provider')
     def test_ok_reallyok(self, greg_provider_mock):
@@ -257,7 +267,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.allowed_merge = lambda x: ret_type(True,[])
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
-        probri.post_pr_message.assert_called_with('it','off','**Ready to merge**')
+        probri.post_pr_message.assert_called_with('it','off',1, message='**Ready to merge**')
 
     @mock.patch('greg.config')
     @mock.patch('greg.provider')
