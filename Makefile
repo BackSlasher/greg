@@ -1,4 +1,4 @@
-.PHONY: test prep clean
+.PHONY: test prep clean localserver
 
 test:
 	bin/pip install -e .[test]
