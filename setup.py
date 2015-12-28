@@ -93,7 +93,7 @@ setup(
     #TODO testing tools?
     extras_require={
         'dev': [''],
-        'test': ['responses','mock','pylint'],
+        'test': ['mock','pylint'],
     },
 
     # If there are data files included in your packages that need to be
