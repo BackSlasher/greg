@@ -1,11 +1,9 @@
 .PHONY: test prep clean
 
 test:
-	set -e ;\
-	. bin/activate ;\
-	pip install -e .[test] ;\
-	pylint greg -E ;\
-	python -m unittest discover -s tests
+	bin/pip install -e .[test]
+	bin/python -m pylint greg -E
+	bin/python -m unittest discover -s tests
 
 localserver:
 	bin/python -m greg.server
