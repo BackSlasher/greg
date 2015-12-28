@@ -7,16 +7,18 @@ app = Flask('application')
 @app.route('/repo')
 def repo():
   headers = {k:request.headers[k] for k in request.headers.keys()}
-  querystring = request.args
+  querystring = {k:request.args[k] for k in request.args.keys()}
   payload = request.data
+  if not querystring.has_key('provider'): return 'missing provider querystring',500
   greg.logic.repo(querystring['provider'],payload,headers,querystring)
 
 # Called by the build server when it finished a job (and requires Greg's help in notifying)
 @app.route('/build')
 def build():
   headers = {k:request.headers[k] for k in request.headers.keys()}
-  querystring = request.args
+  querystring = {k:request.args[k] for k in request.args.keys()}
   payload = request.data
+  if not querystring.has_key('builder'): return 'missing builder querystring',500
   greg.logic.build(querystring['builder'],payload,headers,querystring)
 
 @app.route('/')
