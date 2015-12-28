@@ -24,6 +24,8 @@ def root():
   return 'I am Greg'
 
 def run():
+  import os
+  if os.environ.has_key('DEBUG'): app.debug = True
   app.run()
 
 if __name__ == '__main__':

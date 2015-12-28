@@ -6,7 +6,7 @@ test:
 	bin/python -m unittest discover -s tests
 
 localserver:
-	bin/python -m greg.server
+	DEBUG=true bin/python -m greg.server
 
 prep:
 	set -e ;\
