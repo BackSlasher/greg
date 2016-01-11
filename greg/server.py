@@ -11,6 +11,7 @@ def repo():
   payload = request.data
   if not querystring.has_key('provider'): return 'missing provider querystring',500
   greg.logic.repo(querystring['provider'],payload,headers,querystring)
+  return 'OK'
 
 # Called by the build server when it finished a job (and requires Greg's help in notifying)
 @app.route('/build', methods=['POST'])
@@ -20,6 +21,7 @@ def build():
   payload = request.data
   if not querystring.has_key('builder'): return 'missing builder querystring',500
   greg.logic.build(querystring['builder'],payload,headers,querystring)
+  return 'OK'
 
 @app.route('/')
 def root():
