@@ -104,7 +104,7 @@ def build(builder,body,headers={},querystring={}):
   bubri = greg.builder.locate_bridge(builder)
   job_result = bubri.parse_payload(body,headers,querystring)
   #TODO find provider bridge
-  probri = greg.provider.locate_bridge_by_url(job_result['source']['provider'])
+  probri = greg.provider.locate_bridge_by_url(job_result['source']['provider_url'])
   # return if job is not to be reported
   if not job_result['report']:
       #TODO log that skipping job
