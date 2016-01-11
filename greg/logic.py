@@ -94,6 +94,7 @@ def repo(provider,payload,headers={},querystring={}):
   else:
       # No matching event, can't do anything
       raise Exception('No such event type "%s"' % payload['event']['type'])
+  return 'OK'
 
 # Called from the build server
 def build(builder,body,headers={},querystring={}):
@@ -128,4 +129,5 @@ def build(builder,body,headers={},querystring={}):
     )
   else:
     raise Exception('No such job type "%s"' % job_result['context'])
+  return 'OK'
 
