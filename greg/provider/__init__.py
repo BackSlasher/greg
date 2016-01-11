@@ -1,5 +1,4 @@
 # Allows Greg to talk to code providers
-
 import greg.config
 
 class BridgeProvider:
@@ -21,6 +20,7 @@ def locate_bridge(provider_type):
     raise Exception('no such bridge')
 
 def locate_bridge_by_url(provider_url):
-    if provider_url.startswith('http://bitbucket.org'):
-        return locate_bridge('bitbucket')
+    config = greg.config.get_config()
+    provider_name = config.get_provider_by_source(provider_url)
+    return locate_bridge(provider_name)
 

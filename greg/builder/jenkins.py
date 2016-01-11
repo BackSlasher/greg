@@ -8,10 +8,15 @@ import re
 
 class BridgeBuilderJenkins(BridgeBuilder):
   def parse_repo(self, git_url):
-    (raw_pro,no_pro) = git_url.split(':')
-    provider_url = re.sub('^git@','',raw_pro)
-    (organization,repo_name)=re.sub('\.git$','', no_pro).split('/')
-    return [provider_url, organization, repo_name]
+    if '@' in git_url:
+      # SSH
+      (raw_pro,no_pro) = git_url.split(':')
+      provider_url = raw_pro+':'
+      (organization,repo_name)=re.sub('\.git$','', no_pro).split('/')
+      return [provider_url, organization, repo_name]
+    else:
+      # TODO support https sources
+      raise Exception('Source configuration not supported')
 
   def __init__(self, dic):
     self.url = dic['url']
@@ -26,7 +31,7 @@ class BridgeBuilderJenkins(BridgeBuilder):
     body=json.loads(body)
     job_name=body['name']
     job_done=(body['build']['phase'] == 'COMPLETED')
-    [provider, org, repo_name] = self.parse_repo(body['build']['parameters']['SOURCE'])
+    [provider_url, org, repo_name] = self.parse_repo(body['build']['parameters']['SOURCE'])
     job_good = ( body['build']['status']=='SUCCESS' or body['build']['status']=='UNSTABLE' )
     commit=body['build']['parameters']['COMMIT']
     context=body['build']['parameters']['CONTEXT'] # TODO not actually implemented with us, should be used to indicate whether this is a test/merge
@@ -43,7 +48,7 @@ class BridgeBuilderJenkins(BridgeBuilder):
         'pr': job_pr,
         'context': context,
         'source': {
-          'provider_url': provider,
+          'provider_url': provider_url,
           'organization': org,
           'name': repo_name,
           'commit': commit,

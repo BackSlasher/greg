@@ -13,7 +13,7 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
         'incoming_token': 'hi',
         })
     res=testee.parse_repo('git@bla.com:blu/bli.git')
-    self.assertEqual(res[0],'bla.com')
+    self.assertEqual(res[0],'git@bla.com:')
     self.assertEqual(res[1],'blu')
     self.assertEqual(res[2],'bli')
 
@@ -38,7 +38,7 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
     self.assertEqual(res['report'], True)
     self.assertEqual(res['pr'], None)
     self.assertEqual(res['context'], 'test')
-    self.assertEqual(res['source']['provider_url'], 'bitbucket.org')
+    self.assertEqual(res['source']['provider_url'], 'git@bitbucket.org:')
     self.assertEqual(res['source']['organization'], 'dy-devops')
     self.assertEqual(res['source']['name'], 'chef-dy-spark')
     self.assertEqual(res['source']['commit'], 'master')

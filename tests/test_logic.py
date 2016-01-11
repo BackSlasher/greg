@@ -15,7 +15,7 @@ class TestLogic(unittest.TestCase):
         bubri = builder_mock.locate_bridge.return_value
         bubri.parse_payload.return_value = {
                 'source': {
-                    'provider': 'mockin',
+                    'provider_url': 'mockin',
                     'organization': 'bla',
                     'name': 'blu',
                     'commit': 'bli',
@@ -37,7 +37,7 @@ class TestLogic(unittest.TestCase):
         bubri = builder_mock.locate_bridge.return_value
         bubri.parse_payload.return_value = {
                 'source': {
-                    'provider': 'mockin',
+                    'provider_url': 'mockin',
                     'organization': 'bla',
                     'name': 'blu',
                     'commit': 'bli',
@@ -59,7 +59,7 @@ class TestLogic(unittest.TestCase):
         bubri = builder_mock.locate_bridge.return_value
         bubri.parse_payload.return_value = {
                 'source': {
-                    'provider': 'mockin',
+                    'provider_url': 'mockin',
                     'organization': 'bla',
                     'name': 'blu',
                     'commit': 'bli',

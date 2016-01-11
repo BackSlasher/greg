@@ -81,6 +81,10 @@ class Config:
     provider_dict = self.providers[provider]
     return provider_dict['source']
 
+  def get_provider_by_source(self,source):
+    providers = self.providers
+    return next(provider for provider in providers if provider['source'] == source)
+
   def get_repo_config(self, provider, organization, name):
     return next((rc for rc in self.repos if rc.match(provider, organization, name)),None)
 
