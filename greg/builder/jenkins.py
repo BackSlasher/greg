@@ -1,6 +1,7 @@
 #TODO import upper, like `import ..`?
 
 from greg.builder import BridgeBuilder
+import greg.config
 import requests
 import json
 import re
@@ -51,7 +52,12 @@ class BridgeBuilderJenkins(BridgeBuilder):
         'url': job_url,
         }
 
-  def start_build(self, job_name, params={}):
+  def start_build(self, repo, job_name, params={}):
     url = '%s/job/%s/buildWithParameters' % (self.url,job_name)
+    # Mix source in params
+    # 'SOURCE'
+    git_source_base = greg.config.get_config().provider_source(repo['provider'])
+    git_source = '%s/%s/%s.git' % (git_source_base,repo['organization'],repo['name'])
+    params['SOURCE']=git_source
     resp = requests.request(url=url, method='POST', params=params, auth=(self.username, self.password))
     resp.raise_for_status() # Raise error in case it fails

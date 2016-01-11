@@ -47,10 +47,7 @@ def repo(provider,payload,headers={},querystring={}):
               # Start merge job
               builbri = greg.builder.locate_bridge(merge_job.builder)
               #TODO document parameters better
-              builbri.start_build(merge_job.name,{
-                  'PROVIDER': payload['repo']['provider'],
-                  'USER': payload['repo']['organization'],
-                  'REPO': payload['repo']['name'],
+              builbri.start_build(payload['repo'],merge_job.name,{
                   # TODO merge from specifc commit and not branch name
                   'COMMIT': payload['event']['pr']['src_branch'],
                   'TARGET_BRANCH': payload['event']['pr']['dst_branch'],
@@ -85,10 +82,7 @@ def repo(provider,payload,headers={},querystring={}):
       if test_job:
           builbri = greg.builder.locate_bridge(test_job.builder)
           for change in payload['event']['changes']:
-              builbri.start_build(test_job.name, {
-                  'PROVIDER': payload['repo']['provider'],
-                  'USER': payload['repo']['organization'],
-                  'REPO': payload['repo']['name'],
+              builbri.start_build(payload['repo'],test_job.name, {
                   # TODO merge from specifc commit and not branch name
                   'COMMIT': change['commit'],
                   'REPORT': True,

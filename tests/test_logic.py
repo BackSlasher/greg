@@ -205,14 +205,18 @@ class TestLogic(unittest.TestCase):
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
         probri.post_pr_message.assert_not_called()
-        greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with('yugi', {
-            'PROVIDER': 'shake',
-            'USER': 'it',
-            'REPO': 'off',
-            'COMMIT': 'donald',
-            'TARGET_BRANCH': 'duck',
-            'PR': 1,
-            'REPORT': True,
+        greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with(
+            {
+              'organization': 'it',
+              'name': 'off',
+              'provider': 'shake'
+            },
+            'yugi',
+            {
+              'PR': 1,
+              'COMMIT': 'donald',
+              'REPORT': True,
+              'TARGET_BRANCH': 'duck'
             })
 
     @mock.patch('greg.provider')
@@ -296,10 +300,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
         probri.post_pr_message.assert_not_called()
-        greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with('yugi', {
-            'PROVIDER': 'shake',
-            'USER': 'it',
-            'REPO': 'off',
-            'COMMIT': 'b33f',
-            'REPORT': True,
-            })
+        greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with(
+                {'organization': 'it', 'name': 'off', 'provider': 'shake'},
+                'yugi',
+                {'REPORT': True, 'COMMIT': 'b33f'})

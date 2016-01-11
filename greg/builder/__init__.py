@@ -8,7 +8,7 @@ class BridgeBuilder:
   def parse_payload(self, body,headers={},querystring={}):
     pass
   # TODO harden structure (like (job_name, source_repo, source_commit))
-  def start_build(self, job_name, params={}):
+  def start_build(self, repo, job_name, params={}):
     pass
 
 def locate_bridge(builder_type):
