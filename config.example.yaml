@@ -11,7 +11,7 @@ providers:
     incoming_token: sdfsdf
 builders:
   jenkins:
-    url: http://best.jenkins.com/
+    url: http://best.jenkins.com
     username: blech
     password: bluchs
     incoming_token: glogush
