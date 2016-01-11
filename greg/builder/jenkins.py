@@ -57,7 +57,7 @@ class BridgeBuilderJenkins(BridgeBuilder):
     # Mix source in params
     # 'SOURCE'
     git_source_base = greg.config.get_config().provider_source(repo['provider'])
-    git_source = '%s/%s/%s.git' % (git_source_base,repo['organization'],repo['name'])
+    git_source = '%s%s/%s.git' % (git_source_base,repo['organization'],repo['name'])
     params['SOURCE']=git_source
     resp = requests.request(url=url, method='POST', params=params, auth=(self.username, self.password))
     resp.raise_for_status() # Raise error in case it fails
