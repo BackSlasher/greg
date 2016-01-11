@@ -276,7 +276,7 @@ class TestLogic(unittest.TestCase):
     @mock.patch('greg.config')
     @mock.patch('greg.provider')
     @mock.patch('greg.builder')
-    def test_test_nojob(self, greg_builder_mock, greg_provider_mock, greg_config_mock):
+    def test_test_job(self, greg_builder_mock, greg_provider_mock, greg_config_mock):
         import collections
         probri = greg_provider_mock.locate_bridge.return_value
         probri.parse_payload.return_value = {
