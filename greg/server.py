@@ -4,7 +4,7 @@ from flask import Flask, request
 app = Flask('application')
 
 # Called by the repository (github / bitbucket) whenever there's a commit / comment
-@app.route('/repo')
+@app.route('/repo', methods=['POST'])
 def repo():
   headers = {k:request.headers[k] for k in request.headers.keys()}
   querystring = {k:request.args[k] for k in request.args.keys()}
@@ -13,7 +13,7 @@ def repo():
   greg.logic.repo(querystring['provider'],payload,headers,querystring)
 
 # Called by the build server when it finished a job (and requires Greg's help in notifying)
-@app.route('/build')
+@app.route('/build', methods=['POST'])
 def build():
   headers = {k:request.headers[k] for k in request.headers.keys()}
   querystring = {k:request.args[k] for k in request.args.keys()}
