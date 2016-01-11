@@ -83,7 +83,7 @@ class Config:
 
   def get_provider_by_source(self,source):
     providers = self.providers
-    return next(provider for provider in providers if provider['source'] == source)
+    return next(key for (key,value) in providers.iteritems() if value['source'] == source)
 
   def get_repo_config(self, provider, organization, name):
     return next((rc for rc in self.repos if rc.match(provider, organization, name)),None)
