@@ -17,7 +17,7 @@ def locate_bridge(provider_type):
     dic = greg.config.get_config().providers['bitbucket']
     return greg.provider.bitbucket.BridgeProviderBitbucket(dic)
   else:
-    raise Exception('no such bridge')
+    raise Exception('no such bridge '+provider_type)
 
 def locate_bridge_by_url(provider_url):
     config = greg.config.get_config()
