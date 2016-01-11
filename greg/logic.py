@@ -52,6 +52,7 @@ def repo(provider,payload,headers={},querystring={}):
                   'COMMIT': payload['event']['pr']['src_branch'],
                   'TARGET_BRANCH': payload['event']['pr']['dst_branch'],
                   'PR': payload['event']['pr']['id'],
+                  'CONTEXT': 'merge',
                   'REPORT': True,
                   })
               #TODO write a message that build started?
@@ -85,6 +86,7 @@ def repo(provider,payload,headers={},querystring={}):
               builbri.start_build(payload['repo'],test_job.name, {
                   # TODO merge from specifc commit and not branch name
                   'COMMIT': change['commit'],
+                  'CONTEXT': 'test',
                   'REPORT': True,
                   })
       else:

@@ -216,7 +216,8 @@ class TestLogic(unittest.TestCase):
               'PR': 1,
               'COMMIT': 'donald',
               'REPORT': True,
-              'TARGET_BRANCH': 'duck'
+              'TARGET_BRANCH': 'duck',
+              'CONTEXT': 'merge',
             })
 
     @mock.patch('greg.provider')
@@ -303,4 +304,4 @@ class TestLogic(unittest.TestCase):
         greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with(
                 {'organization': 'it', 'name': 'off', 'provider': 'shake'},
                 'yugi',
-                {'REPORT': True, 'COMMIT': 'b33f'})
+                {'REPORT': True, 'COMMIT': 'b33f', 'CONTEXT': 'test'})
