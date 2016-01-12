@@ -24,6 +24,7 @@ class TestLogic(unittest.TestCase):
                 'context': 'test',
                 'url': 'glog',
                 'good': False,
+                'done': True,
                 }
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_not_called()
@@ -47,9 +48,33 @@ class TestLogic(unittest.TestCase):
                 'context': 'merge',
                 'url': 'glog',
                 'good': False,
+                'done': True,
                 }
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_called_once_with('bla', 'blu', 5, 'Merge **failed**  \nglog')
+        probri.post_commit_test.assert_not_called()
+
+    @mock.patch('greg.provider')
+    @mock.patch('greg.builder')
+    def test_provider_not_done(self,builder_mock,provider_mock):
+        probri = provider_mock.locate_bridge_by_url.return_value
+        bubri = builder_mock.locate_bridge.return_value
+        bubri.parse_payload.return_value = {
+                'source': {
+                    'provider_url': 'mockin',
+                    'organization': 'bla',
+                    'name': 'blu',
+                    'commit': 'bli',
+                    },
+                'pr':5,
+                'report': True,
+                'context': 'merge',
+                'url': 'glog',
+                'good': True,
+                'done': False,
+                }
+        greg.logic.build('jenkins','bod','param')
+        probri.post_pr_message.assert_not_called()
         probri.post_commit_test.assert_not_called()
 
     @mock.patch('greg.provider')
@@ -69,6 +94,7 @@ class TestLogic(unittest.TestCase):
                 'context': 'merge',
                 'url': 'glog',
                 'good': True,
+                'done': True,
                 }
         greg.logic.build('jenkins','bod','param')
         probri.post_pr_message.assert_not_called()

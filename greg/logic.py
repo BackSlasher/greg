@@ -109,6 +109,9 @@ def build(builder,body,headers={},querystring={}):
   if not job_result['report']:
       #TODO log that skipping job
       return
+  if not job_result['done']:
+      # TODO log that ignoring job not done
+      return
   if job_result['context'] == 'merge':
       if job_result['good']:
         # TODO log that not reporting succesful merge
