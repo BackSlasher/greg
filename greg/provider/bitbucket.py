@@ -23,7 +23,7 @@ class BridgeProviderBitbucket(BridgeProvider):
     resp=requests.request(method=method, url=url, data=data, headers=headers, auth=(self.username, self.password))
     resp.raise_for_status() # raise error if there's an issue
     body = resp.text
-    if resp.headers['content-type'] == 'application/json':
+    if resp.headers['content-type'].startswith('application/json'):
       body = json.loads(body)
     return body
 
