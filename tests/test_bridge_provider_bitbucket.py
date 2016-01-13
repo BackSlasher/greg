@@ -36,6 +36,8 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'incoming_token': 'glig',
       })
     testee.api = MagicMock()
+    testee.get_commit_approval = MagicMock()
+    testee.get_commit_approval.return_value=False
     testee.set_commit_approval('bla','blu','1',True)
     testee.api.assert_called_once_with('2.0','repositories/bla/blu/commit/1/approve',method='post')
 
@@ -47,9 +49,22 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'incoming_token': 'glig',
       })
     testee.api = MagicMock()
+    testee.get_commit_approval = MagicMock()
+    testee.get_commit_approval.return_value=True
     testee.set_commit_approval('bla','blu','1',False)
     testee.api.assert_called_once_with('2.0','repositories/bla/blu/commit/1/approve',method='delete')
 
+  def test_commit_notouch(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api = MagicMock()
+    testee.get_commit_approval = MagicMock()
+    testee.get_commit_approval.return_value=True
+    testee.set_commit_approval('bla','blu','1',True)
+    testee.api.assert_not_called()
 
   # reporting a test result
   def test_commit_test(self):
