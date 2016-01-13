@@ -32,7 +32,7 @@ class BridgeBuilderJenkins(BridgeBuilder):
     job_name=body['name']
     job_done=(body['build']['phase'] == 'COMPLETED')
     [provider_url, org, repo_name] = self.parse_repo(body['build']['parameters']['SOURCE'])
-    job_good = ( body['build']['status']=='SUCCESS' or body['build']['status']=='UNSTABLE' )
+    job_good = body['build'].get('status','UNKNOWN') in ['SUCCESS', 'UNSTABLE']
     commit=body['build']['parameters']['COMMIT']
     context=body['build']['parameters']['CONTEXT'] # TODO not actually implemented with us, should be used to indicate whether this is a test/merge
     job_report=body['build']['parameters']['REPORT']=='true'
