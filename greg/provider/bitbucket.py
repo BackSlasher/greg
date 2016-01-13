@@ -37,10 +37,6 @@ class BridgeProviderBitbucket(BridgeProvider):
   def get_commit_json(self, organization, name, commit):
     return self.api('2.0',"repositories/%s/%s/commit/%s" %(organization, name, commit))
 
-  def commit_code_ok(self, organization, name, commit):
-      commit = self.get_commit_json(organization, name, commit)
-      return any(p['approved'] and p['user']['username']==self.username for p in commit['participants']) #TODO handle cases where email is provided instead of username
-
   def post_commit_comment(self,organization,name,commit,content):
       return self.api('1.0',"repositories/%s/%s/changesets/%s/comments"%(organization, name, commit),{'content': content},'post')
 
@@ -95,7 +91,7 @@ class BridgeProviderBitbucket(BridgeProvider):
       reviewers=[p['user']['username'] for p in reviewers_raw] #TODO should we downcase?
       approvers=[p['user']['username'] for p in reviewers_raw if p['approved']]
       #TODO count code status
-      code_ok=self.commit_code_ok(repo_org,repo_name,commit_hash)
+      code_ok=self.get_commit_approval(repo_org,repo_name,commit_hash)
       comment_body=body['comment']['content']['raw']
       ret['event'] = {
           'type': 'pr:comment',
