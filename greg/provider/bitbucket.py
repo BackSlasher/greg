@@ -47,13 +47,16 @@ class BridgeProviderBitbucket(BridgeProvider):
   def post_pr_comment(self,organization,name,pr_id,content):
       return self.api('1.0',"repositories/%s/%s/pullrequests/%s/comments"%(organization, name, pr_id),{'content': content},'post')
 
-  def set_commit_approval(self,organization,name,commit,is_approved):
+  def get_commit_approval(self,organization,name,commit):
       # Check if I approved this commit
       my_username = self.api('1.0','user')['user']['username']
       status = self.api('2.0',"repositories/%s/%s/commit/%s"%(organization, name, commit))
       current_approved = any(participant['approved'] and participant['user']['username'] == my_username for participant in status['participants'])
+      return current_approved
+
+  def set_commit_approval(self,organization,name,commit,is_approved):
       # If the approval status doesn't match the current value
-      if is_approved != current_approved:
+      if is_approved != self.get_commit_approval(organization,name,commit):
         return self.api('2.0',"repositories/%s/%s/commit/%s/approve"%(organization, name, commit),method=( 'post' if is_approved else 'delete'))
 
   def __init__(self, dic):
