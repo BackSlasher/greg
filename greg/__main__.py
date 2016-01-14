@@ -5,8 +5,8 @@ import greg.config
 def main():
     parser = argparse.ArgumentParser(description='Integrate your build server and source control')
     parser.add_argument('--config', default='config.yaml', help='Path to config file')
-    parser.add_argument('--fixhooks', action='store_const', const='fixhooks', dest='action', help='Ensure repos alert greg on changes')
-    parser.add_argument('-url', help='Base URL for greg')
+    parser.add_argument('--fix-hooks', action='store_const', const='fixhooks', dest='action', help='Ensure repos alert greg on changes')
+    parser.add_argument('--url', help='Base URL for greg')
     args = parser.parse_args()
     print args
 
