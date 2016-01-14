@@ -150,10 +150,7 @@ class BridgeProviderBitbucket(BridgeProvider):
 
   # Make sure a webhook exists and reports back to greg
   def ensure_webhook(self,organization,name,my_url):
-      # Ensure hook to us doesn't exist already
-      # Response indicates pagination but I don't see a reference in the api https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html
-
-      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))['values']
+      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))
       existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url)]
       proper_hook = {
               'url': my_url,
