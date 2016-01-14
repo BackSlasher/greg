@@ -25,6 +25,12 @@ class BridgeProviderBitbucket(BridgeProvider):
     body = resp.text
     if resp.headers['content-type'].startswith('application/json'):
       body = json.loads(body)
+      # Handle pagination
+      if method == 'GET' and type(body)==dict and body.keys() and set(body.keys()).issubset(set(['size','page','pagelen','next','previous','values'])):
+        values = body['values']
+        if body.has_key('next'):
+          values.extend(self.api_raw(body['next']))
+        return values
     return body
 
   def api(self,version,path,form_data={},method=None,request_type=None):
