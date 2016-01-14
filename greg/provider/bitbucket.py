@@ -133,9 +133,9 @@ class BridgeProviderBitbucket(BridgeProvider):
 
   def url_base_compare(self,a,b):
     def strip_url(u):
-      u._replace(netloc='')
-      u._replace(query='')
-      u._replace(fragment='')
+      u=u._replace(path='')
+      u=u._replace(query='')
+      u=u._replace(fragment='')
       return u
     from urlparse import urlparse
     u_a = strip_url(urlparse(a))

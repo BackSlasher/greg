@@ -137,3 +137,18 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res['event']['pr']['id'],1)
     self.assertEqual(res['event']['pr']['code_ok'],True)
 
+  def test_url_base_compare(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    self.assertEqual(testee.url_base_compare(
+        'http://bla.com/bla',
+        'http://bla.com/'
+        ),True)
+    self.assertEqual(testee.url_base_compare(
+        'http://bla.com/bla',
+        'http://bla.org/bla'
+        ),False)
+
