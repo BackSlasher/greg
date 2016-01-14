@@ -22,15 +22,27 @@ def main():
       print 'Not doing anything'
 
 def fix_hooks(args):
+    import greg.provider
     # Reject when no url
     if not args.url:
         raise Exception('Must have URL to fix hooks')
+    my_url = args.url
     #TODO complete
     # Enumerate all repo entries in config
     config = greg.config.get_config()
     print config.repos
-    # for every one, get all repos that match (give provider, org, get list, match it to selectors)
-    # For each repo, call the relevant method on provider object
+    for repo_conf in config.repos:
+        provider = greg.provider.locate_bridge(repo_conf.provider)
+        # Enumerate over all organizations
+        for org in repo_conf.organizations:
+            # Find all repos that match the repo config
+            all_repos = provider.list_repos(org)
+            repos = filter(lambda repo: repo_conf.match(repo_conf.provider, org, repo), all_repos)
+            for repo in repos:
+                # Ensure webhooks on that repo
+                #print repo_conf.provider,org,repo
+                provider.ensure_webhook(org,repo,my_url)
+                #pass
 
 if __name__ == "__main__":
     main()

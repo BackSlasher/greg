@@ -161,3 +161,96 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     testee.api=MagicMock(return_value=[{'name':'team'},{'name':'fortress'}])
     repos = testee.list_repos('2')
     self.assertEqual(set(repos),set(['team','fortress']))
+
+  def test_ensure_webhook_add(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    dest=MagicMock()
+    def replacement_api(version,url,form_data={},method=None):
+      if url.endswith('hooks/'):
+        return []
+      else:
+        return dest(version,url,form_data=form_data,method=method)
+    testee.api = replacement_api
+    testee.ensure_webhook('on','aboat','http://me.com')
+    dest.assert_called_once_with('2.0','repositories/on/aboat/hooks',form_data={
+      'url': 'http://me.com',
+      'description': 'Greg2',
+      'skip_cert_verification': False,
+      'active': True,
+      'events': [u'pullrequest:comment_created', u'repo:push'],
+      },method='PUT')
+
+  def test_ensure_webhook_replace(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    dest=MagicMock()
+    def replacement_api(version,url,form_data={},method=None):
+      if url.endswith('hooks/'):
+        return [{
+          'uuid': 1,
+          'url': 'http://me.com/bla',
+          'description': 'Greg2',
+          'skip_cert_verification': False,
+          'active': True,
+          'events': [u'pullrequest:comment_created', u'repo:push'],
+          }]
+      else:
+        return dest(version,url,form_data=form_data,method=method)
+    testee.api = replacement_api
+    testee.ensure_webhook('on','aboat','http://me.com')
+    dest.assert_called_once_with('2.0','repositories/on/aboat/hooks/1',form_data={
+      'url': 'http://me.com',
+      'description': 'Greg2',
+      'skip_cert_verification': False,
+      'active': True,
+      'events': [u'pullrequest:comment_created', u'repo:push'],
+      },method='POST')
+
+  def test_ensure_webhook_remove(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    dest=MagicMock()
+    def replacement_api(*args, **kwargs):
+      if args[1].endswith('hooks/'):
+        return [
+            {
+            'uuid': 1,
+            'url': 'http://me.com/bla',
+            'description': 'Greg2',
+            'skip_cert_verification': False,
+            'active': True,
+            'events': [u'pullrequest:comment_created', u'repo:push'],
+            },
+            {
+            'uuid': 2,
+            'url': 'http://me.com/',
+            'description': 'Grog2',
+            'skip_cert_verification': False,
+            'active': True,
+            'events': [u'pullrequest:comment_created', u'repo:push'],
+            }
+          ]
+      else:
+        return dest(*args, **kwargs)
+    testee.api = replacement_api
+    testee.ensure_webhook('on','aboat','http://me.com')
+    dest.assert_any_call('2.0','repositories/on/aboat/hooks/1',method='DELETE')
+    dest.assert_any_call('2.0','repositories/on/aboat/hooks/2',method='DELETE')
+    dest.assert_any_call('2.0','repositories/on/aboat/hooks',form_data={
+      'url': 'http://me.com',
+      'description': 'Greg2',
+      'skip_cert_verification': False,
+      'active': True,
+      'events': [u'pullrequest:comment_created', u'repo:push'],
+      },method='PUT')
+    self.assertEquals(dest.call_count,3)
