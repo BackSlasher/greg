@@ -152,3 +152,12 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
         'http://bla.org/bla'
         ),False)
 
+  def list_repos(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api=MagicMock(return_value=[{'name':'team'},{'name':'fortress'}])
+    repos = testee.list_repos('2')
+    self.assertEqual(set(repos),set(['team','fortress']))

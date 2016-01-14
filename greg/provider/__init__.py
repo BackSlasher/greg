@@ -12,6 +12,8 @@ class BridgeProvider:
     pass
   def ensure_webhook(self,organization,name,my_url):
       pass
+  def list_repos(self,organization):
+    pass
 
 def locate_bridge(provider_type):
   if provider_type == 'bitbucket':

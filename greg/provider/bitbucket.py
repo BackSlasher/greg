@@ -190,3 +190,6 @@ class BridgeProviderBitbucket(BridgeProvider):
                   form_data=proper_hook,
                   method='PUT'
                   )
+
+  def list_repos(self,organization):
+    return [repo['name'] for repo in self.api('2.0','repositories/%s' % (organization))]
