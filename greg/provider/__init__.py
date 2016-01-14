@@ -10,6 +10,8 @@ class BridgeProvider:
     pass
   def post_pr_message(self, organization, name, pr, message):
     pass
+  def ensure_webhook(self,organization,name,my_url):
+      pass
 
 def locate_bridge(provider_type):
   if provider_type == 'bitbucket':

@@ -130,3 +130,57 @@ class BridgeProviderBitbucket(BridgeProvider):
   #TODO rename?
   def post_pr_message(self, organization, name, pr, message):
       self.post_pr_comment(organization,name,pr, message)
+
+  def url_base_compare(self,a,b):
+    def strip_url(u):
+      u._replace(netloc='')
+      u._replace(query='')
+      u._replace(fragment='')
+      return u
+    from urlparse import urlparse
+    u_a = strip_url(urlparse(a))
+    u_b = strip_url(urlparse(b))
+    return u_a == u_b
+
+  # Make sure a webhook exists and reports back to greg
+  def ensure_webhook(self,organization,name,my_url):
+      # Ensure hook to us doesn't exist already
+      # Response indicates pagination but I don't see a reference in the api https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html
+
+      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))['values']
+      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url)]
+      proper_hook = {
+              'url': my_url,
+              'description': 'Greg2',
+              'skip_cert_verification': False,
+              'active': True,
+              'events': [u'pullrequest:comment_created', u'repo:push'],
+              }
+      if len(existing_hooks) == 1:
+          # Replace hook if needed
+          existing_hook = existing_hooks[0]
+          existing_values = [existing_hook[k] for k in proper_hook.keys()]
+          existing_ok = existing_values == proper_hook.values()
+          if not existing_ok:
+            # replace
+            self.api(
+                    '2.0',
+                    'repositories/%s/%s/hooks/%s'% (organization,name,existing_hook['uuid']),
+                    form_data=proper_hook,
+                    method='POST'
+                    )
+      else:
+          # Delete all hooks if there are any
+          for hook in existing_hooks:
+              self.api(
+                      '2.0',
+                      'repositories/%s/%s/hooks/%s'% (organization,name,hook['uuid']),
+                      method='DELETE'
+                      )
+          # Create new hook
+          self.api(
+                  '2.0',
+                  'repositories/%s/%s/hooks'% (organization,name),
+                  form_data=proper_hook,
+                  method='PUT'
+                  )
