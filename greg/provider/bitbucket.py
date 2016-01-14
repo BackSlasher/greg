@@ -19,7 +19,7 @@ class BridgeProviderBitbucket(BridgeProvider):
     elif request_type == 'string':
       data=form_data
     else:
-      raise Exception("Bad request_type"%(request_type))
+      raise Exception("Bad request_type %s"%(request_type))
     resp=requests.request(method=method, url=url, data=data, headers=headers, auth=(self.username, self.password))
     resp.raise_for_status() # raise error if there's an issue
     body = resp.text
@@ -170,7 +170,8 @@ class BridgeProviderBitbucket(BridgeProvider):
                     '2.0',
                     'repositories/%s/%s/hooks/%s'% (organization,name,existing_hook['uuid']),
                     form_data=proper_hook,
-                    method='POST'
+                    method='PUT',
+                    request_type='json'
                     )
       else:
           # Delete all hooks if there are any
@@ -185,7 +186,8 @@ class BridgeProviderBitbucket(BridgeProvider):
                   '2.0',
                   'repositories/%s/%s/hooks'% (organization,name),
                   form_data=proper_hook,
-                  method='PUT'
+                  method='POST',
+                  request_type='json'
                   )
 
   def list_repos(self,organization):
