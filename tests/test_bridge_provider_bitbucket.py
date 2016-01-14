@@ -152,7 +152,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
         'http://bla.org/bla'
         ),False)
 
-  def list_repos(self):
+  def test_list_repos(self):
     testee = BridgeProviderBitbucket({
       'username': 'greg',
       'password': 'grog',
