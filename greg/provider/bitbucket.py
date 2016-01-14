@@ -150,8 +150,6 @@ class BridgeProviderBitbucket(BridgeProvider):
 
   # Make sure a webhook exists and reports back to greg
   def ensure_webhook(self,organization,name,my_url):
-      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))
-      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url)]
       proper_hook = {
               'url': my_url,
               'description': 'Greg2',
@@ -159,6 +157,8 @@ class BridgeProviderBitbucket(BridgeProvider):
               'active': True,
               'events': [u'pullrequest:comment_created', u'repo:push'],
               }
+      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))
+      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url) or hook['description'] == proper_hook['description']]
       if len(existing_hooks) == 1:
           # Replace hook if needed
           existing_hook = existing_hooks[0]
