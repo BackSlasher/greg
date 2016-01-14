@@ -23,16 +23,20 @@ def main():
 
 def fix_hooks(args):
     import greg.provider
+    from urlparse import urlparse
+    import re
     # Reject when no url
     if not args.url:
         raise Exception('Must have URL to fix hooks')
     my_url = args.url
-    #TODO complete
     # Enumerate all repo entries in config
     config = greg.config.get_config()
-    print config.repos
     for repo_conf in config.repos:
         provider = greg.provider.locate_bridge(repo_conf.provider)
+        # Build proper URL
+        provider_url = urlparse(my_url)
+        provider_url = provider_url._replace(path=re.sub('/*$','/',provider_url.path)+'repo')
+        provider_url = provider_url._replace(query='provider=%s&token=%s'%(repo_conf.provider,provider.incoming_token))
         # Enumerate over all organizations
         for org in repo_conf.organizations:
             # Find all repos that match the repo config
@@ -40,9 +44,8 @@ def fix_hooks(args):
             repos = filter(lambda repo: repo_conf.match(repo_conf.provider, org, repo), all_repos)
             for repo in repos:
                 # Ensure webhooks on that repo
-                #print repo_conf.provider,org,repo
-                provider.ensure_webhook(org,repo,my_url)
-                #pass
+                provider.ensure_webhook(org,repo,provider_url.geturl())
+    # TODO add hooks on builders and not only on providers
 
 if __name__ == "__main__":
     main()
