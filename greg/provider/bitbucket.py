@@ -93,9 +93,9 @@ class BridgeProviderBitbucket(BridgeProvider):
       comment_id=body['comment']['id']
       #TODO pull comment from API
       # count reviewers and approvers
-      reviewers_raw = body['pullrequest']['reviewers'] # TODO maybe needs to be participants
-      reviewers=[p['user']['username'] for p in reviewers_raw] #TODO should we downcase?
-      approvers=[p['user']['username'] for p in reviewers_raw if p['approved']]
+      reviewers=set(p['user']['username'] for p in body['pullrequest']['reviewers'])
+      reviewers.add(body['pullrequest']['author']['username']) # Author is always a reviewer
+      approvers=set(p['user']['username'] for p in body['pullrequest']['participants'] if p['approved'])
       #TODO count code status
       code_ok=self.get_commit_approval(repo_org,repo_name,commit_hash)
       comment_body=body['comment']['content']['raw']
@@ -106,8 +106,8 @@ class BridgeProviderBitbucket(BridgeProvider):
             'src_branch': pr_source['branch']['name'],
             'dst_branch': pr_dest['branch']['name'],
             'same_repo': pr_same_repo,
-            'reviewers': set(reviewers),
-            'approvers': set(approvers),
+            'reviewers': reviewers,
+            'approvers': approvers,
             'code_ok': code_ok,
             },
           'text': comment_body,

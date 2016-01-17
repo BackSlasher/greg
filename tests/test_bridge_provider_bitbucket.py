@@ -132,8 +132,8 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res['event']['pr']['src_branch'],'add-webshot')
     self.assertEqual(res['event']['pr']['dst_branch'],'master')
     self.assertEqual(res['event']['pr']['same_repo'],True)
-    self.assertEqual(res['event']['pr']['reviewers'],set())
-    self.assertEqual(res['event']['pr']['approvers'],set())
+    self.assertEqual(res['event']['pr']['reviewers'],set(['BackSlasher']))
+    self.assertEqual(res['event']['pr']['approvers'],set(['BackSlasher']))
     self.assertEqual(res['event']['pr']['id'],1)
     self.assertEqual(res['event']['pr']['code_ok'],True)
 
