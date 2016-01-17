@@ -17,7 +17,7 @@ I started working on it because I wanted to automate my cookbook lifecycle and c
 
 Basics
 ======
-Greg runs as a server (in the future: Django and AWS Lambda support) and is configured using a ``config.yaml``.
+Greg runs as a flask server (in the future: Django and AWS Lambda support) and is configured using a ``config.yaml``.
 
 It does 3 things:
 
@@ -27,7 +27,7 @@ It does 3 things:
 
 Structure
 =========
-This iteration of Greg is designed to be modular. It contains multiple "bridge" modules that allow it to work with multiple build servers / code providers. I've only implemented what I require, but this should allow one to integreate Greg with other builders/providers
+Greg is designed to be modular. It contains multiple "bridge" modules that allow it to work with multiple build servers / code providers. I've only implemented what I require, but this should allow one to integreate Greg with other builders/providers
 
 Hacking and testing
 ===================
@@ -47,17 +47,20 @@ Job configuration
 `````````````````
 Job should have the following parameters:
 
-- SOURCE: git repo url
-- COMMIT: commit to test/merge
-- CONTEXT: job type (test/merge)
-- REPORT: whether to report back to the provider (can be disabled for jobs invoked manually)
-- PR (merge jobs only): PR that is targeted (for reporting purposes)
-- TARGET (merge jobs only): Branch to merge to
+- SOURCE (string): git repo url
+- COMMIT (string): commit to test/merge
+- CONTEXT (string): job type (test/merge)
+- REPORT (boolean): whether to report back to the provider (can be disabled for jobs invoked manually)
+- PR (merge jobs only)(string): PR that is targeted (for reporting purposes)
+- TARGET (merge jobs only)(string): Branch to merge to
 
 Job reporting
 `````````````
-If Jenkins requires Greg's help in notifying the provider when the test/merge passed/failed (we currently use it):  
+If Jenkins requires Greg's help in notifying the provider when the test/merge passed/failed (we currently use it):
+
 Job should use the `notification plugin <https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin>`__ to report its status:
+
+TODO should be automatically configured according to ``config.yaml``
 
 - Format: JSON
 - Protocol: HTTP
