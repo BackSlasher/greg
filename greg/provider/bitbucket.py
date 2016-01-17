@@ -93,7 +93,7 @@ class BridgeProviderBitbucket(BridgeProvider):
       comment_id=body['comment']['id']
       #TODO pull comment from API
       # count reviewers and approvers
-      reviewers=set(p['user']['username'] for p in body['pullrequest']['reviewers'])
+      reviewers=set(p['username'] for p in body['pullrequest']['reviewers'])
       reviewers.add(body['pullrequest']['author']['username']) # Author is always a reviewer
       approvers=set(p['user']['username'] for p in body['pullrequest']['participants'] if p['approved'])
       #TODO count code status
