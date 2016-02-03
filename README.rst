@@ -65,6 +65,6 @@ TODO should be automatically configured according to ``config.yaml``
 - Format: JSON
 - Protocol: HTTP
 - Event: Job Completed
-- URL: <GREG>/build?type=jenkins&token=<PRIVATE_TOKEN>
+- URL: <GREG>/build?builder=jenkins&token=<PRIVATE_TOKEN>
 - Timeout: 30000
 - Log: 0

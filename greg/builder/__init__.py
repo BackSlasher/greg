@@ -10,6 +10,8 @@ class BridgeBuilder:
   # TODO harden structure (like (job_name, source_repo, source_commit))
   def start_build(self, repo, job_name, params={}):
     pass
+  def ensure_webhook(self,job_name,my_url):
+      pass
 
 def locate_bridge(builder_type):
   if builder_type == 'jenkins':

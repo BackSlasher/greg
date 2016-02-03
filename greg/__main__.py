@@ -23,6 +23,7 @@ def main():
 
 def fix_hooks(args):
     import greg.provider
+    import greg.builder
     from urlparse import urlparse
     import re
     # Reject when no url
@@ -45,7 +46,18 @@ def fix_hooks(args):
             for repo in repos:
                 # Ensure webhooks on that repo
                 provider.ensure_webhook(org,repo,provider_url.geturl())
-    # TODO add hooks on builders and not only on providers
+    # Collect all jobs and builders
+    jobs = set([(job.name,job.builder) for repo in config.repos for job in repo.jobs.values()])
+    builders = set([job[1] for job in jobs])
+    for builder_name in builders:
+        builder_jobs = set([job[0] for job in jobs if job[1]==builder_name])
+        builder = greg.builder.locate_bridge(builder_name)
+        builder_url = urlparse(my_url)
+        builder_url = builder_url._replace(path=re.sub('/*$','/',builder_url.path)+'builder')
+        builder_url = builder_url._replace(query='builder=%s&token=%s'%(builder_name,builder.incoming_token))
+        for job_name in builder_jobs:
+            builder.ensure_webhook(job_name,builder_url)
+
 
 if __name__ == "__main__":
     main()
