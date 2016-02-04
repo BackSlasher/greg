@@ -32,7 +32,7 @@ def repo(provider,payload,headers={},querystring={}):
   config = greg.config.get_config()
   # Get action (comment / push)
   if payload['event']['type'] == 'pr:comment': # Comment
-    escaped_string = re.sub('[^a-z]+','',payload['event']['text']).lower()
+    escaped_string = re.sub('[^a-z]+','',payload['event']['text'].lower())
     if  escaped_string == 'gregplease': # Greg please
       merge_check = allowed_merge(payload)
       if merge_check.allowed:

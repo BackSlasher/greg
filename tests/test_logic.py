@@ -246,6 +246,51 @@ class TestLogic(unittest.TestCase):
               'CONTEXT': 'merge',
             })
 
+    @mock.patch('greg.config')
+    @mock.patch('greg.provider')
+    @mock.patch('greg.builder')
+    def test_merge_allow_captial(self, greg_builder_mock, greg_provider_mock, greg_config_mock):
+        import collections
+        probri = greg_provider_mock.locate_bridge.return_value
+        probri.parse_payload.return_value = {
+                'repo': {
+                    'provider': 'shake',
+                    'organization': 'it',
+                    'name': 'off',
+                    },
+                'event': {
+                    'type': 'pr:comment',
+                    'text': 'Greg please',
+                    'pr': {
+                        'src_branch': 'donald',
+                        'dst_branch': 'duck',
+                        'id': 1,
+                        },
+                    },
+                }
+        config = greg_config_mock.get_config.return_value
+        config.get_job.return_value = collections.namedtuple('Job',['name','builder'])('yugi','oh')
+        ret_type = collections.namedtuple('merge_review', ['allowed','issues'])
+        old_allowed_merge = greg.logic.allowed_merge
+        greg.logic.allowed_merge = lambda x: ret_type(True,[])
+        greg.logic.repo('bb','',{})
+        greg.logic.allowed_merge = old_allowed_merge
+        probri.post_pr_message.assert_not_called()
+        greg_builder_mock.locate_bridge.return_value.start_build.assert_called_once_with(
+            {
+              'organization': 'it',
+              'name': 'off',
+              'provider': 'shake'
+            },
+            'yugi',
+            {
+              'PR': 1,
+              'COMMIT': 'donald',
+              'REPORT': True,
+              'TARGET_BRANCH': 'duck',
+              'CONTEXT': 'merge',
+            })
+
     @mock.patch('greg.provider')
     def test_ok_notok(self, greg_provider_mock):
         import collections
