@@ -1,7 +1,6 @@
 # testing greg.builder.jenkins
 
 import unittest
-from lxml.doctestcompare import LXMLOutputChecker
 
 class TestBridgeBuilderJenkins(unittest.TestCase):
   # parse_repo parses git@bla urls
@@ -90,13 +89,18 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
     config_before = ET.fromstring(xml_config)
     config_after = ET.fromstring(xml_config)
     testee.ensure_notification_endpoint('http://good-url.com/build?builder=jenkins&token=hi',config_after)
-    self.assertXmlEqual(ET.tostring(config_before), ET.tostring(config_after))
+    self.assertXmlEqual(config_before, config_after)
 
   def assertXmlEqual(self, got, want):
-    checker = LXMLOutputChecker()
-    if not checker.check_output(want, got, 0):
-      message = checker.output_difference(Example("", want), got, 0)
-      raise AssertionError(message)
+    import xml.etree.ElementTree as ET
+    for x in got.iter():
+        if x.tail: x.tail = x.tail.strip()
+    for x in want.iter():
+        if x.tail: x.tail = x.tail.strip()
+    self.assertEqual(
+        ET.tostring(got),
+        ET.tostring(want)
+        )
 
   def test_ensure_notification_endpoint_add(self):
     from greg.builder.jenkins import BridgeBuilderJenkins
@@ -164,4 +168,4 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
 </properties></project>
 ''')
     testee.ensure_notification_endpoint('http://good-url.com/build?builder=jenkins&token=hi',config_before)
-    self.assertXmlEqual(ET.tostring(config_before), ET.tostring(config_proper))
+    self.assertXmlEqual(config_before, config_proper)
