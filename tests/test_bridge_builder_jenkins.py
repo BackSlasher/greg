@@ -17,6 +17,27 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
     self.assertEqual(res[1],'blu')
     self.assertEqual(res[2],'bli')
 
+  def recurse_sort_xml(self,a):
+    import xml.etree.ElementTree as ET
+    a.tail=''
+    if len(a): a.text='' # Remove leftover text if this node has child elements
+    children = [ c for c in  a ]
+    # TODO will it keep them alive?
+    for child in children:
+      a.remove(child)
+      self.recurse_sort_xml(child)
+    sorted_children = sorted(children, key=lambda item: ET.tostring(item))
+    for child in sorted_children:
+      a.append(child)
+
+  def assertXmlEqual(self,a,b):
+    import xml.etree.ElementTree as ET
+    clone_a = ET.fromstring(ET.tostring(a))
+    clone_b = ET.fromstring(ET.tostring(b))
+    self.recurse_sort_xml(clone_a)
+    self.recurse_sort_xml(clone_b)
+    self.assertEqual(ET.tostring(clone_a), ET.tostring(clone_b))
+
   # parse_payload works with exmaple data
   def test_parse_payload(self):
     from greg.builder.jenkins import BridgeBuilderJenkins
@@ -61,16 +82,8 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
         <com.tikal.hudson.plugins.notification.Endpoint>
           <protocol>HTTP</protocol>
           <format>JSON</format>
-          <url>http://localhost:8081/jenkins?token=5QIGCvBLv0sZ7cRUOr55</url>
-          <event>completed</event>
-          <timeout>30000</timeout>
-          <loglines>0</loglines>
-        </com.tikal.hudson.plugins.notification.Endpoint>
-        <com.tikal.hudson.plugins.notification.Endpoint>
-          <protocol>HTTP</protocol>
-          <format>JSON</format>
           <url>http://good-url.com/build?builder=jenkins&amp;token=hi</url>
-          <event>all</event>
+          <event>completed</event>
           <timeout>30000</timeout>
           <loglines>0</loglines>
         </com.tikal.hudson.plugins.notification.Endpoint>
@@ -90,17 +103,6 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
     config_after = ET.fromstring(xml_config)
     testee.ensure_notification_endpoint('http://good-url.com/build?builder=jenkins&token=hi',config_after)
     self.assertXmlEqual(config_before, config_after)
-
-  def assertXmlEqual(self, got, want):
-    import xml.etree.ElementTree as ET
-    for x in got.iter():
-        if x.tail: x.tail = x.tail.strip()
-    for x in want.iter():
-        if x.tail: x.tail = x.tail.strip()
-    self.assertEqual(
-        ET.tostring(got),
-        ET.tostring(want)
-        )
 
   def test_ensure_notification_endpoint_add(self):
     from greg.builder.jenkins import BridgeBuilderJenkins
