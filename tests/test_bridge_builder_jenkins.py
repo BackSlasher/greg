@@ -171,3 +171,87 @@ class TestBridgeBuilderJenkins(unittest.TestCase):
 ''')
     testee.ensure_notification_endpoint('http://good-url.com/build?builder=jenkins&token=hi',config_before)
     self.assertXmlEqual(config_before, config_proper)
+
+  def test_ensure_notification_endpoint_reduce(self):
+    from greg.builder.jenkins import BridgeBuilderJenkins
+    import xml.etree.ElementTree as ET
+    testee = BridgeBuilderJenkins({
+        'url':'http://wow.com',
+        'username': 'greg',
+        'password': 'grog',
+        'incoming_token': 'hi',
+        })
+    config_before = ET.fromstring('''
+<project><properties>
+<com.tikal.hudson.plugins.notification.HudsonNotificationProperty plugin="notification@1.9">
+      <endpoints>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://localhost:8081/jenkins?token=5QIGCvBLv0sZ7cRUOr55</url>
+          <event>completed</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://requestb.in/15rhdx23</url>
+          <event>all</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://good-url.com/build?builder=jenkins&amp;token=hi</url>
+          <event>completed</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://good-url.com/build?builder=jenkins&amp;token=hi</url>
+          <event>completed</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+      </endpoints>
+</com.tikal.hudson.plugins.notification.HudsonNotificationProperty>
+</properties></project>
+''')
+    config_proper = ET.fromstring('''
+<project><properties>
+<com.tikal.hudson.plugins.notification.HudsonNotificationProperty plugin="notification@1.9">
+      <endpoints>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://localhost:8081/jenkins?token=5QIGCvBLv0sZ7cRUOr55</url>
+          <event>completed</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://requestb.in/15rhdx23</url>
+          <event>all</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+        <com.tikal.hudson.plugins.notification.Endpoint>
+          <protocol>HTTP</protocol>
+          <format>JSON</format>
+          <url>http://good-url.com/build?builder=jenkins&amp;token=hi</url>
+          <event>completed</event>
+          <timeout>30000</timeout>
+          <loglines>0</loglines>
+        </com.tikal.hudson.plugins.notification.Endpoint>
+      </endpoints>
+</com.tikal.hudson.plugins.notification.HudsonNotificationProperty>
+</properties></project>
+''')
+    testee.ensure_notification_endpoint('http://good-url.com/build?builder=jenkins&token=hi',config_before)
+    self.assertXmlEqual(config_before, config_proper)
