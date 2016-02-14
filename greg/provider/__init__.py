@@ -48,6 +48,10 @@ def locate_bridge(provider_type):
     import greg.provider.bitbucket
     dic = greg.config.get_config().providers['bitbucket']
     return greg.provider.bitbucket.BridgeProviderBitbucket(dic)
+  elif provider_type == 'github':
+    import greg.provider.github
+    dic = greg.config.get_config().providers['github']
+    return greg.provider.github.BridgeProviderGithub(dic)
   else:
     raise Exception('no such bridge '+provider_type)
 
