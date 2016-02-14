@@ -53,7 +53,7 @@ def fix_hooks(args):
         builder_jobs = set([job[0] for job in jobs if job[1]==builder_name])
         builder = greg.builder.locate_bridge(builder_name)
         builder_url = urlparse(my_url)
-        builder_url = builder_url._replace(path=re.sub('/*$','/',builder_url.path)+'builder')
+        builder_url = builder_url._replace(path=re.sub('/*$','/',builder_url.path)+'build')
         builder_url = builder_url._replace(query='builder=%s&token=%s'%(builder_name,builder.incoming_token))
         for job_name in builder_jobs:
             builder.ensure_webhook(job_name,builder_url.geturl())
