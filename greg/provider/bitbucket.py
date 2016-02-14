@@ -37,6 +37,11 @@ class BridgeProviderBitbucket(BridgeProvider):
     uri="https://api.bitbucket.org/%s/%s" %(version,path)
     return self.api_raw(uri,form_data,method,request_type)
 
+  def my_username(self):
+      if not self._my_username:
+        self._my_username=self.api('1.0','user')['user']['username']
+      return self._my_username
+
   def get_pr_json(self, organization, name, pr_id):
     return self.api('2.0',"repositories/%s/%s/pullrequests/%s" %(organization, name, pr_id))
 
@@ -51,9 +56,8 @@ class BridgeProviderBitbucket(BridgeProvider):
 
   def get_commit_approval(self,organization,name,commit):
       # Check if I approved this commit
-      my_username = self.api('1.0','user')['user']['username']
       status = self.api('2.0',"repositories/%s/%s/commit/%s"%(organization, name, commit))
-      current_approved = any(participant['approved'] and participant['user']['username'] == my_username for participant in status['participants'])
+      current_approved = any(participant['approved'] and participant['user']['username'] == self.my_username() for participant in status['participants'])
       return current_approved
 
   def set_commit_approval(self,organization,name,commit,is_approved):
@@ -65,6 +69,7 @@ class BridgeProviderBitbucket(BridgeProvider):
     self.username=dic['username']
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']
+    self._my_username=None
 
   def parse_payload(self, body, headers={}, querystring={}):
     presented_token=querystring['token']
@@ -95,6 +100,7 @@ class BridgeProviderBitbucket(BridgeProvider):
       # count reviewers and approvers
       reviewers=set(p['username'] for p in body['pullrequest']['reviewers'])
       reviewers.add(body['pullrequest']['author']['username']) # Author is always a reviewer
+      if self.my_username() in reviewers: reviewers.remove(self.my_username()) # Remove self
       approvers=set(p['user']['username'] for p in body['pullrequest']['participants'] if p['approved'])
       #TODO count code status
       code_ok=self.get_commit_approval(repo_org,repo_name,commit_hash)

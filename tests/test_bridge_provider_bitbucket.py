@@ -106,6 +106,17 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res['event']['changes'][0]['commit'],'bf89e3d025b08c78009fc2c6884916add07314e1')
     self.assertEqual(res['event']['changes'][0]['branch'],'bla')
 
+  def test_my_username(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    testee.api=MagicMock(return_value={'user':{'username':'bla'}})
+    res = testee.my_username()
+    self.assertEqual(res,'bla')
+
+
   # parsing a payload - PR comment
   def test_payload_comment(self):
     testee = BridgeProviderBitbucket({
@@ -119,6 +130,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     querystring={
         'token': 'glig',
         }
+    testee.my_username = lambda: 'greg'
     body_path = os.path.join(os.path.dirname(__file__), 'responses/bitbucket_pr_comment.txt')
     with open (body_path) as myfile:
         body=myfile.read()
