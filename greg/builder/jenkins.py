@@ -127,8 +127,8 @@ class BridgeBuilderJenkins(BridgeBuilder):
 
     # Get XML
     config = self.get_job_config(job_name)
-    self.ensure_notification_endpoint(my_url,config)
     # Make sure parameters are exactly what we need
+    #TODO complete
     # Make sure we have at least one endpoint pointing to greg's url
-    # If no such element, create it
+    self.ensure_notification_endpoint(my_url,config)
     # Job completed
