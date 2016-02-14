@@ -75,6 +75,12 @@ class BridgeBuilderJenkins(BridgeBuilder):
     config = ET.fromstring(resp.text)
     return config
 
+  def set_job_config(self,job_name,config):
+    config_text = ET.tostring(config)
+    url = '%s/job/%s/config.xml' % (self.url,job_name)
+    resp = requests.request(url=url, method='POST', data=config_text, auth=(self.username, self.password))
+    resp.raise_for_status()
+
   def url_base_compare(self,a,b):
     def strip_url(u):
       u=u._replace(path='')
@@ -118,7 +124,6 @@ class BridgeBuilderJenkins(BridgeBuilder):
     add_mini_element(new_endpoint,'timeout','30000')
     add_mini_element(new_endpoint,'loglines','0')
 
-
   def ensure_webhook(self,job_name,my_url):
     # Required permissions:
     # strategy.add(Jenkins.READ,it)
@@ -127,8 +132,11 @@ class BridgeBuilderJenkins(BridgeBuilder):
 
     # Get XML
     config = self.get_job_config(job_name)
+    config_orig = ET.fromstring(ET.tostring(config))
     # Make sure parameters are exactly what we need
     #TODO complete
     # Make sure we have at least one endpoint pointing to greg's url
     self.ensure_notification_endpoint(my_url,config)
     # Job completed
+    if ET.tostring(config) != ET.tostring(config_orig):
+        self.set_job_config(job_name,config)
