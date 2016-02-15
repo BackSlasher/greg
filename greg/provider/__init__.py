@@ -11,7 +11,7 @@ repo:
   orgranization: X
   name: X
 event:
-  type: X
+  type: X # 'pr:comment' / 'push'
   pr:
     id: X
     src_branch: X
