@@ -25,7 +25,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'incoming_token': 'glig',
       })
     testee.api = MagicMock()
-    testee.post_commit_comment('bla','blu','1','hello')
+    testee.post_commit_comment('bla','Blu','1','hello')
     testee.api.assert_called_once_with('1.0','repositories/bla/blu/changesets/1/comments',{'content':'hello'}, 'post')
   # approving commit
 
@@ -172,7 +172,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       })
     testee.api=MagicMock(return_value=[{'name':'team'},{'name':'Fortress'}])
     repos = testee.list_repos('2')
-    self.assertEqual(set(repos),set(['team','fortress']))
+    self.assertEqual(set(repos),set(['team','Fortress']))
 
   def test_ensure_webhook_add(self):
     testee = BridgeProviderBitbucket({

@@ -43,27 +43,27 @@ class BridgeProviderBitbucket(BridgeProvider):
       return self._my_username
 
   def get_pr_json(self, organization, name, pr_id):
-    return self.api('2.0',"repositories/%s/%s/pullrequests/%s" %(organization, name, pr_id))
+    return self.api('2.0',"repositories/%s/%s/pullrequests/%s" %(organization, name.lower(), pr_id))
 
   def get_commit_json(self, organization, name, commit):
-    return self.api('2.0',"repositories/%s/%s/commit/%s" %(organization, name, commit))
+    return self.api('2.0',"repositories/%s/%s/commit/%s" %(organization, name.lower(), commit))
 
   def post_commit_comment(self,organization,name,commit,content):
-      return self.api('1.0',"repositories/%s/%s/changesets/%s/comments"%(organization, name, commit),{'content': content},'post')
+      return self.api('1.0',"repositories/%s/%s/changesets/%s/comments"%(organization, name.lower(), commit),{'content': content},'post')
 
   def post_pr_comment(self,organization,name,pr_id,content):
-      return self.api('1.0',"repositories/%s/%s/pullrequests/%s/comments"%(organization, name, pr_id),{'content': content},'post')
+      return self.api('1.0',"repositories/%s/%s/pullrequests/%s/comments"%(organization, name.lower(), pr_id),{'content': content},'post')
 
   def get_commit_approval(self,organization,name,commit):
       # Check if I approved this commit
-      status = self.api('2.0',"repositories/%s/%s/commit/%s"%(organization, name, commit))
+      status = self.api('2.0',"repositories/%s/%s/commit/%s"%(organization, name.lower(), commit))
       current_approved = any(participant['approved'] and participant['user']['username'] == self.my_username() for participant in status['participants'])
       return current_approved
 
   def set_commit_approval(self,organization,name,commit,is_approved):
       # If the approval status doesn't match the current value
-      if is_approved != self.get_commit_approval(organization,name,commit):
-        return self.api('2.0',"repositories/%s/%s/commit/%s/approve"%(organization, name, commit),method=( 'post' if is_approved else 'delete'))
+      if is_approved != self.get_commit_approval(organization,name.lower(),commit):
+        return self.api('2.0',"repositories/%s/%s/commit/%s/approve"%(organization, name.lower(), commit),method=( 'post' if is_approved else 'delete'))
 
   def __init__(self, dic):
     self.username=dic['username']
@@ -163,7 +163,7 @@ class BridgeProviderBitbucket(BridgeProvider):
               'active': True,
               'events': [u'pullrequest:comment_created', u'repo:push'],
               }
-      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name))
+      hooks = self.api('2.0','repositories/%s/%s/hooks/' % (organization,name.lower()))
       existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url) or hook['description'] == proper_hook['description']]
       if len(existing_hooks) == 1:
           # Replace hook if needed
@@ -174,7 +174,7 @@ class BridgeProviderBitbucket(BridgeProvider):
             # replace
             self.api(
                     '2.0',
-                    'repositories/%s/%s/hooks/%s'% (organization,name,existing_hook['uuid']),
+                    'repositories/%s/%s/hooks/%s'% (organization,name.lower(),existing_hook['uuid']),
                     form_data=proper_hook,
                     method='PUT',
                     request_type='json'
@@ -184,17 +184,17 @@ class BridgeProviderBitbucket(BridgeProvider):
           for hook in existing_hooks:
               self.api(
                       '2.0',
-                      'repositories/%s/%s/hooks/%s'% (organization,name,hook['uuid']),
+                      'repositories/%s/%s/hooks/%s'% (organization,name.lower(),hook['uuid']),
                       method='DELETE'
                       )
           # Create new hook
           self.api(
                   '2.0',
-                  'repositories/%s/%s/hooks'% (organization,name),
+                  'repositories/%s/%s/hooks'% (organization,name.lower()),
                   form_data=proper_hook,
                   method='POST',
                   request_type='json'
                   )
 
   def list_repos(self,organization):
-    return [repo['name'].lower() for repo in self.api('2.0','repositories/%s' % (organization))]
+    return [repo['name'] for repo in self.api('2.0','repositories/%s' % (organization))]
