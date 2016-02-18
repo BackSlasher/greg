@@ -170,7 +170,7 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
       'password': 'grog',
       'incoming_token': 'glig',
       })
-    testee.api=MagicMock(return_value=[{'name':'team'},{'name':'fortress'}])
+    testee.api=MagicMock(return_value=[{'name':'team'},{'name':'Fortress'}])
     repos = testee.list_repos('2')
     self.assertEqual(set(repos),set(['team','fortress']))
 

@@ -197,4 +197,4 @@ class BridgeProviderBitbucket(BridgeProvider):
                   )
 
   def list_repos(self,organization):
-    return [repo['name'] for repo in self.api('2.0','repositories/%s' % (organization))]
+    return [repo['name'].lower() for repo in self.api('2.0','repositories/%s' % (organization))]
