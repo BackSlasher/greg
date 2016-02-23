@@ -85,6 +85,7 @@ class BridgeProviderGithub(BridgeProvider):
     return approvers
 
   def parse_payload(self, body, headers={}, querystring={}):
+    import re
     body = json.loads(body)
     ret={
             'repo': {
@@ -98,7 +99,7 @@ class BridgeProviderGithub(BridgeProvider):
     # make sure pull_request
     if event_type == 'IssueCommentEvent':
         # make sure is pull request
-        if not body['issue'].has_key('pull_request'): pass
+        if not body['issue'].has_key('pull_request'): return
         pr_object = self.api_raw(body['issue']['pull_request']['url'])
         comments_object = self.api_raw(pr_object['comments_url'])
 
@@ -111,12 +112,19 @@ class BridgeProviderGithub(BridgeProvider):
         pr_hash['same_repo']= (pr_object['base']['repo']['full_name'] == pr_object['head']['repo']['full_name'])
 
         # Build reviewers and approvers from comments
-        # Reviewers: all users that are tagged, in any message where I am tagged, with the word "review" (should match reviewers and reviewed)
-        # @greg @backslasher should review
         # Approvers: Users that made a comment that has some constructive text
+        pr_hash['reviewers']=self.comments_collect_reviewers(comments_object)
+        pr_hash['approvers']=self.comments_collect_approvers(comments_object)
+
+        # Check if code ok
+        status_url = re.sub('/statuses/(\w\d)$',r'/status/\1', body['repository']['statuses_url'])
+        # TODO make a more detailed message about which checks failed?
+        pr_hash['code_ok'] = self.api_raw(status_url)['state']=='success'
 
         ret['event']['pr']=pr_hash
 
+        # Collect text
+        ret['event']=body['comment']['body']
 
     return ret
 
