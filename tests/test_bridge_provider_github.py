@@ -103,6 +103,27 @@ class TestBridgeProviderGithub(unittest.TestCase):
         self.assertEqual(res, set(['blu','bll']))
 
     # parsing payload - code push
+    def test_payload_push(self):
+        testee = self.get_testee()
+        headers = {
+                'X-GitHub-Event': 'PushEvent',
+                }
+        querystring={
+                'token': 'glig',
+                }
+        body_path = os.path.join(os.path.dirname(__file__), 'responses/github_push_trigger.txt')
+        with open (body_path) as myfile:
+            body=myfile.read()
+        res = testee.parse_payload(body,headers,querystring)
+        print 'nitznitnzintizntiz', res
+        self.assertEqual(res['repo']['provider'], 'github')
+        self.assertEqual(res['repo']['organization'], 'baxterthehacker')
+        self.assertEqual(res['repo']['name'], 'public-repo')
+        self.assertEqual(res['event']['type'], 'push')
+        self.assertEqual(len(res['event']['changes']), 1)
+        self.assertEqual(res['event']['changes'][0]['commit'], '0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c')
+        self.assertEqual(res['event']['changes'][0]['branch'], None)
+
 
     # parsing payload - PR comment
     def test_payload_comment(self):

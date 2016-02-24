@@ -93,12 +93,11 @@ class BridgeProviderGithub(BridgeProvider):
   def parse_payload(self, body, headers={}, querystring={}):
     import re
     body = json.loads(body)
-    repo_org = body['repository']['owner']['login']
     repo_name = body['repository']['name']
     ret={
             'repo': {
                 'provider': 'github',
-                'organization': repo_org,
+                # organization provided below, differs between events
                 'name': repo_name,
                 },
             'event': {},
@@ -106,6 +105,7 @@ class BridgeProviderGithub(BridgeProvider):
     event_type = headers['X-GitHub-Event']
     # make sure pull_request
     if event_type == 'IssueCommentEvent':
+        ret['repo']['organization'] = body['repository']['owner']['login']
         # make sure is pull request
         if not body['issue'].has_key('pull_request'): return
         pr_object = self.api_raw(body['issue']['pull_request']['url'])
@@ -125,12 +125,26 @@ class BridgeProviderGithub(BridgeProvider):
 
         # Check if code ok
         # TODO make a more detailed message about which checks failed?
-        pr_hash['code_ok'] = self.get_code_status(repo_org, repo_name, pr_object['head']['sha'])
+        pr_hash['code_ok'] = self.get_code_status(ret['repo']['organization'], repo_name, pr_object['head']['sha'])
 
         ret['event']['pr']=pr_hash
 
         # Collect text
         ret['event']['text']=body['comment']['body']
+    elif event_type == 'PushEvent':
+      ret['repo']['organization'] = body['repository']['owner']['name']
+      ret['event']= {
+          'type': 'push',
+          'changes': [
+              {
+                'branch': body['base_ref'],
+                'commit': body['after'],
+              }
+            ],
+      }
+    else:
+      #TODO log ignoring event
+      pass
 
     return ret
 
