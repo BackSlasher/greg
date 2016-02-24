@@ -91,12 +91,16 @@ class TestBridgeProviderGithub(unittest.TestCase):
                 {
                     'user': {'login': 'blu'},
                     'body': 'not LGTM',
-                }
+                },
+                {
+                    'user': {'login': 'bll'},
+                    'body': '@greg LGTM',
+                },
             ]
         testee = self.get_testee()
         testee.my_username = lambda: 'greg'
         res = testee.comments_collect_approvers(comments)
-        self.assertEqual(res, set(['blu']))
+        self.assertEqual(res, set(['blu','bll']))
 
     # parsing payload - code push
 
@@ -144,7 +148,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
         self.assertEqual(res['event']['pr']['same_repo'],True)
         self.assertEqual(res['event']['pr']['reviewers'],set(['octocat', 'bob']))
         self.assertEqual(res['event']['pr']['approvers'],set(['octocat']))
-        self.assertEqual(res['event']['pr']['id'],1)
+        self.assertEqual(res['event']['pr']['id'],1347)
         self.assertEqual(res['event']['pr']['code_ok'],True)
 
     # webhook maintenance

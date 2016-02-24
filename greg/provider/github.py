@@ -73,9 +73,9 @@ class BridgeProviderGithub(BridgeProvider):
       writer = comment_object['user']['login']
       if not self.comment_is_referencing_me(text): continue # Skip if not referncing me
       # Find approving comments
-      has_lgtm = re.match(r'\bLGTM\b', text, re.IGNORECASE) is not None
+      has_lgtm = re.search(r'\bLGTM\b', text, re.IGNORECASE) is not None
       # Find rejecting comments
-      has_not_lgtm = re.match(r'\bnot LGTM\b', text, re.IGNORECASE) is not None
+      has_not_lgtm = re.search(r'\bnot LGTM\b', text, re.IGNORECASE) is not None
       if has_not_lgtm:
         approvers.remove(writer)
       elif has_lgtm:
