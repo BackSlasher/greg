@@ -4,6 +4,7 @@ import unittest
 from mock import MagicMock
 from greg.provider.github import BridgeProviderGithub
 import os
+import json
 
 class TestBridgeProviderGithub(unittest.TestCase):
 
@@ -52,6 +53,51 @@ class TestBridgeProviderGithub(unittest.TestCase):
                 },
                 request_type='json')
 
+    def test_collect_reviewers(self):
+        comments = [
+                {
+                    'body': '@greg review @bla @blu'
+                },
+                {
+                    'body': '@greg hello @bli'
+                },
+                {
+                    'body': 'review @bli'
+                }
+            ]
+        testee = self.get_testee()
+        testee.my_username = lambda: 'greg'
+        res = testee.comments_collect_reviewers(comments)
+        self.assertEqual(res, set(['bla','blu','bli']))
+
+    def test_collect_approvers(self):
+        comments = [
+                {
+                    'user': {'login': 'bla'},
+                    'body': '@greg LGTM',
+                },
+                {
+                    'user': {'login': 'bla'},
+                    'body': '@greg not LGTM',
+                },
+                {
+                    'user': {'login': 'bli'},
+                    'body': 'LGTM',
+                },
+                {
+                    'user': {'login': 'blu'},
+                    'body': 'LGTM @greg',
+                },
+                {
+                    'user': {'login': 'blu'},
+                    'body': 'not LGTM',
+                }
+            ]
+        testee = self.get_testee()
+        testee.my_username = lambda: 'greg'
+        res = testee.comments_collect_approvers(comments)
+        self.assertEqual(res, set(['blu']))
+
     # parsing payload - code push
 
     # parsing payload - PR comment
@@ -63,21 +109,41 @@ class TestBridgeProviderGithub(unittest.TestCase):
         querystring={
                 'token': 'glig',
                 }
-        body_path = os.path.join(os.path.dirname(__file__), 'responses/github_pr_comment.txt')
+        body_path = os.path.join(os.path.dirname(__file__), 'responses/github_pr_comment_trigger.txt')
         with open (body_path) as myfile:
             body=myfile.read()
 
+        # TODO patch api_raw:
+        # pr, comments, status
+        def my_api_raw(url, form_data={}, method=None, request_type=None):
+            if '/pulls/' in url:
+                url_basic_path = 'github_pr_raw.txt'
+            elif '/comments' in url:
+                url_basic_path = 'github_pr_comments.txt'
+
+                # https://api.github.com/repos/baxterthehacker/public-repo/statuses/{sha}
+            else:
+                raise Exception('dunno dis '+url)
+            url_path = os.path.join(os.path.dirname(__file__), 'responses',url_basic_path)
+            with open (url_path) as myfile:
+                url_body=myfile.read()
+            ret = json.loads(url_body)
+            return ret
+
+        testee.api_raw = my_api_raw
+        testee.my_username = lambda: 'greg'
+        testee.get_code_status = lambda x,y,z: True
+
         res = testee.parse_payload(body,headers,querystring)
-        print res
         self.assertEqual(res['repo']['provider'], 'github')
-        self.assertEqual(res['repo']['organization'],'dy-devops')
-        self.assertEqual(res['repo']['name'],'janitor-starter')
+        self.assertEqual(res['repo']['organization'],'baxterthehacker')
+        self.assertEqual(res['repo']['name'],'public-repo')
         self.assertEqual(res['event']['type'],'pr:comment')
-        self.assertEqual(res['event']['pr']['src_branch'],'add-webshot')
+        self.assertEqual(res['event']['pr']['src_branch'],'new-topic')
         self.assertEqual(res['event']['pr']['dst_branch'],'master')
         self.assertEqual(res['event']['pr']['same_repo'],True)
-        self.assertEqual(res['event']['pr']['reviewers'],set(['BackSlasher']))
-        self.assertEqual(res['event']['pr']['approvers'],set(['BackSlasher']))
+        self.assertEqual(res['event']['pr']['reviewers'],set(['octocat', 'bob']))
+        self.assertEqual(res['event']['pr']['approvers'],set(['octocat']))
         self.assertEqual(res['event']['pr']['id'],1)
         self.assertEqual(res['event']['pr']['code_ok'],True)
 

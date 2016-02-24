@@ -52,7 +52,7 @@ class BridgeProviderGithub(BridgeProvider):
 
   def comment_is_referencing_me(self, comment_text):
     import re
-    return re.match('\\b@%s\\b' % (re.escape(self.my_username())), comment_text)
+    return re.search(r'(?<!\w)@%s\b' % (re.escape(self.my_username())), comment_text)
 
   def comments_collect_reviewers(self,comment_object_list):
     import re
@@ -60,7 +60,7 @@ class BridgeProviderGithub(BridgeProvider):
     for comment_object in comment_object_list:
       text = comment_object['body']
       if not self.comment_is_referencing_me(text): continue # Skip if not referncing me
-      mentions = set(re.findall(r'(?<!\w)@(\w)+',text))
+      mentions = set(re.findall(r'(?<!\w)@(\w+)',text))
       reviewers.update(mentions)
     reviewers.discard(self.my_username())
     return reviewers
@@ -84,14 +84,22 @@ class BridgeProviderGithub(BridgeProvider):
     approvers.discard(self.my_username())
     return approvers
 
+  def get_code_status(self, org, repo_name, commit):
+    target_url = 'repos/%s/%s/statuses/%s' % (org, repo_name, commit)
+    resp = self.api(target_url)
+    state_string = resp['state']
+    return state_string
+
   def parse_payload(self, body, headers={}, querystring={}):
     import re
     body = json.loads(body)
+    repo_org = body['repository']['owner']['login']
+    repo_name = body['repository']['name']
     ret={
             'repo': {
                 'provider': 'github',
-                'organization': body['repository']['owner']['login'],
-                'name': body['repository']['name'],
+                'organization': repo_org,
+                'name': repo_name,
                 },
             'event': {},
     }
@@ -103,10 +111,9 @@ class BridgeProviderGithub(BridgeProvider):
         pr_object = self.api_raw(body['issue']['pull_request']['url'])
         comments_object = self.api_raw(pr_object['comments_url'])
 
-
         ret['event']['type']='pr:comment'
         pr_hash = {}
-        pr_hash['id']=body['number']
+        pr_hash['id']=pr_object['number']
         pr_hash['src_branch']=pr_object['head']['ref']
         pr_hash['dst_branch']=pr_object['base']['ref']
         pr_hash['same_repo']= (pr_object['base']['repo']['full_name'] == pr_object['head']['repo']['full_name'])
@@ -117,14 +124,13 @@ class BridgeProviderGithub(BridgeProvider):
         pr_hash['approvers']=self.comments_collect_approvers(comments_object)
 
         # Check if code ok
-        status_url = re.sub('/statuses/(\w\d)$',r'/status/\1', body['repository']['statuses_url'])
         # TODO make a more detailed message about which checks failed?
-        pr_hash['code_ok'] = self.api_raw(status_url)['state']=='success'
+        pr_hash['code_ok'] = self.get_code_status(repo_org, repo_name, pr_object['head']['sha'])
 
         ret['event']['pr']=pr_hash
 
         # Collect text
-        ret['event']=body['comment']['body']
+        ret['event']['text']=body['comment']['body']
 
     return ret
 
