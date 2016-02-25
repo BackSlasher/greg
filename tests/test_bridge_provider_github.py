@@ -115,7 +115,6 @@ class TestBridgeProviderGithub(unittest.TestCase):
         with open (body_path) as myfile:
             body=myfile.read()
         res = testee.parse_payload(body,headers,querystring)
-        print 'nitznitnzintizntiz', res
         self.assertEqual(res['repo']['provider'], 'github')
         self.assertEqual(res['repo']['organization'], 'baxterthehacker')
         self.assertEqual(res['repo']['name'], 'public-repo')
