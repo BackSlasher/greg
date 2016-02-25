@@ -172,3 +172,33 @@ class TestBridgeProviderGithub(unittest.TestCase):
         self.assertEqual(res['event']['pr']['code_ok'],True)
 
     # webhook maintenance
+    def test_list_repos(self):
+      testee = self.get_testee()
+      body_path = os.path.join(os.path.dirname(__file__), 'responses/github_repo_list.txt')
+      with open (body_path) as myfile:
+          body=myfile.read()
+      testee.api=MagicMock(return_value=json.loads(body))
+      repos=testee.list_repos('a')
+      self.assertEqual(set(repos), set(['Hello-World']))
+
+    def test_ensure_webhook_add(self):
+      testee = self.get_testee()
+      dest=MagicMock()
+      def replacement_api(path,form_data={},method=None,request_type=None):
+        if path.endswith('/hooks') and (method=='GET' or method is None):
+          return []
+        else:
+          return dest(path,form_data=form_data,method=method,request_type=request_type)
+      testee.api = replacement_api
+      testee.ensure_webhook('on','aboat','http://me.com')
+      dest.assert_called_once_with('/repos/on/aboat/hooks', form_data={
+        'name': 'web',
+        'config': {
+          'url': 'http://me.com',
+          'content_type': 'json',
+          },
+        'events': ['push', 'issue_comment'],
+        'active': True,
+        },method='POST',
+        request_type='json'
+        )

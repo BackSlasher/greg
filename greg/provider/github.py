@@ -205,20 +205,20 @@ class BridgeProviderGithub(BridgeProvider):
                       method='PATCH',
                       request_type='json'
                       )
-          else:
-              # Delete all hooks if there are any
-              for hook in existing_hooks:
-                  self.api(
-                          '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
-                          method='DELETE'
-                          )
-              # Create new hook
+      else:
+          # Delete all hooks if there are any
+          for hook in existing_hooks:
               self.api(
-                      '/repos/%s/%s/hooks'%(organization,name),
-                      form_data=proper_hook,
-                      method='POST',
-                      request_type='json'
+                      '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
+                      method='DELETE'
                       )
+          # Create new hook
+          self.api(
+                  '/repos/%s/%s/hooks'%(organization,name),
+                  form_data=proper_hook,
+                  method='POST',
+                  request_type='json'
+                  )
   # Get all repos in a specific organization
   def list_repos(self,organization):
       return [repo['name'] for repo in self.api('/users/%s/repos'%(organization))]
