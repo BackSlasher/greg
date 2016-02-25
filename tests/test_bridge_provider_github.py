@@ -23,14 +23,14 @@ class TestBridgeProviderGithub(unittest.TestCase):
         testee = self.get_testee()
         testee.api = MagicMock()
         testee.post_pr_message('bla','blu',1,'hi')
-        testee.api.assert_called_once_with('/repos/bla/blu/issues/1/comments',form_data = {'body': 'hi'}, request_type='json')
+        testee.api.assert_called_once_with('repos/bla/blu/issues/1/comments',form_data = {'body': 'hi'}, request_type='json')
 
     # posting good code status
     def test_commit_test_good(self):
         testee = self.get_testee()
         testee.api = MagicMock()
         testee.post_commit_test('org','nom','com','jen','goog',True)
-        testee.api.assert_called_once_with('/repos/org/nom/statuses/com',
+        testee.api.assert_called_once_with('repos/org/nom/statuses/com',
                 form_data = {
                     'state': 'success',
                     'target_url': 'goog',
@@ -44,7 +44,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
         testee = self.get_testee()
         testee.api = MagicMock()
         testee.post_commit_test('org','nom','com','jen','goog',False)
-        testee.api.assert_called_once_with('/repos/org/nom/statuses/com',
+        testee.api.assert_called_once_with('repos/org/nom/statuses/com',
                 form_data = {
                     'state': 'error',
                     'target_url': 'goog',
@@ -191,7 +191,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
           return dest(path,form_data=form_data,method=method,request_type=request_type)
       testee.api = replacement_api
       testee.ensure_webhook('on','aboat','http://me.com')
-      dest.assert_called_once_with('/repos/on/aboat/hooks', form_data={
+      dest.assert_called_once_with('repos/on/aboat/hooks', form_data={
         'name': 'web',
         'config': {
           'url': 'http://me.com',
@@ -232,7 +232,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
           return dest(path,form_data=form_data,method=method,request_type=request_type)
       testee.api = replacement_api
       testee.ensure_webhook('octocat','Hello-World','http://me.com')
-      dest.assert_called_once_with('/repos/octocat/Hello-World/hooks/1', form_data={
+      dest.assert_called_once_with('repos/octocat/Hello-World/hooks/1', form_data={
         'name': 'web',
         'config': {
           'url': 'http://me.com',
@@ -341,9 +341,9 @@ class TestBridgeProviderGithub(unittest.TestCase):
           return dest(*args, **kwargs)
       testee.api = replacement_api
       testee.ensure_webhook('octocat','Hello-World','http://me.com')
-      dest.assert_any_call('/repos/octocat/Hello-World/hooks/1', method='DELETE')
-      dest.assert_any_call('/repos/octocat/Hello-World/hooks/2', method='DELETE')
-      dest.assert_any_call('/repos/octocat/Hello-World/hooks', form_data={
+      dest.assert_any_call('repos/octocat/Hello-World/hooks/1', method='DELETE')
+      dest.assert_any_call('repos/octocat/Hello-World/hooks/2', method='DELETE')
+      dest.assert_any_call('repos/octocat/Hello-World/hooks', form_data={
         'name': 'web',
         'config': {
           'url': 'http://me.com',

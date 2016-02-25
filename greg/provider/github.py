@@ -165,7 +165,7 @@ class BridgeProviderGithub(BridgeProvider):
     else:
         state_string='error'
     description_string = '%s: %s' % (builder_type, state_string)
-    return self.api('/repos/%s/%s/statuses/%s' % (organization,name,commit), form_data = {
+    return self.api('repos/%s/%s/statuses/%s' % (organization,name,commit), form_data = {
         'state': state_string,
         'target_url': url,
         'description': state_string, # TODO something prettier?
@@ -176,7 +176,7 @@ class BridgeProviderGithub(BridgeProvider):
     # POST /repos/:owner/:repo/issues/:number/comments
     # https://developer.github.com/v3/issues/comments/
     # body: { "body": "Me too"}
-    return self.api('/repos/%s/%s/issues/%d/comments' % (organization,name,pr), form_data = {'body': message}, request_type='json')
+    return self.api('repos/%s/%s/issues/%d/comments' % (organization,name,pr), form_data = {'body': message}, request_type='json')
 
   # Make sure a repo has a greg webhook
   def ensure_webhook(self,organization,name,my_url):
@@ -190,7 +190,7 @@ class BridgeProviderGithub(BridgeProvider):
               'events': ['push', 'issue_comment'],
               'active': True,
               }
-      hooks = self.api('/repos/%s/%s/hooks'%(organization,name))
+      hooks = self.api('repos/%s/%s/hooks'%(organization,name))
       existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['config']['url'],my_url)]
       if len(existing_hooks) == 1:
           # Replace hook if needed
@@ -200,7 +200,7 @@ class BridgeProviderGithub(BridgeProvider):
           if not existing_ok:
               # replace
               self.api(
-                      '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
+                      'repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
                       form_data=proper_hook,
                       method='PATCH',
                       request_type='json'
@@ -209,16 +209,16 @@ class BridgeProviderGithub(BridgeProvider):
           # Delete all hooks if there are any
           for hook in existing_hooks:
               self.api(
-                      '/repos/%s/%s/hooks/%d'%(organization,name,hook['id']),
+                      'repos/%s/%s/hooks/%d'%(organization,name,hook['id']),
                       method='DELETE'
                       )
           # Create new hook
           self.api(
-                  '/repos/%s/%s/hooks'%(organization,name),
+                  'repos/%s/%s/hooks'%(organization,name),
                   form_data=proper_hook,
                   method='POST',
                   request_type='json'
                   )
   # Get all repos in a specific organization
   def list_repos(self,organization):
-      return [repo['name'] for repo in self.api('/users/%s/repos'%(organization))]
+      return [repo['name'] for repo in self.api('users/%s/repos'%(organization))]
