@@ -335,6 +335,8 @@ class TestLogic(unittest.TestCase):
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
                         'id': 1,
+                        'approvers': set(['a']),
+                        'reviewers': set(['b']),
                         },
                     },
                 }
@@ -343,7 +345,7 @@ class TestLogic(unittest.TestCase):
         greg.logic.allowed_merge = lambda x: ret_type(True,[])
         greg.logic.repo('bb','',{})
         greg.logic.allowed_merge = old_allowed_merge
-        probri.post_pr_message.assert_called_with('it','off',1, message='**Ready to merge**')
+        probri.post_pr_message.assert_called_with('it','off',1, message='**Ready to merge**  \nreviewers: b  \napprovers: a')
 
     @mock.patch('greg.config')
     @mock.patch('greg.provider')

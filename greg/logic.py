@@ -66,7 +66,9 @@ def repo(provider,payload,headers={},querystring={}):
     elif escaped_string == 'gregok': # Greg OK
       merge_check = allowed_merge(payload)
       if merge_check.allowed:
-          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Ready to merge**')
+          reviewers = ','.join(payload['event']['pr']['reviewers'])
+          approvers = ','.join(payload['event']['pr']['approvers'])
+          probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message=('**Ready to merge**  \nreviewers: %s  \napprovers: %s' % (reviewers,approvers)))
       else:
           reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
           probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Not ready to merge**  \n'+reason_list)
