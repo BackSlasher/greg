@@ -221,4 +221,4 @@ class BridgeProviderGithub(BridgeProvider):
                   )
   # Get all repos in a specific organization
   def list_repos(self,organization):
-      return [repo['name'] for repo in self.api('users/%s/repos'%(organization))]
+      return [repo['name'] for repo in self.api('orgs/%s/repos'%(organization))]
