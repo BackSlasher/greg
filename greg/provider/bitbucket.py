@@ -143,17 +143,6 @@ class BridgeProviderBitbucket(BridgeProvider):
   def post_pr_message(self, organization, name, pr, message):
       self.post_pr_comment(organization,name,pr, message)
 
-  def url_base_compare(self,a,b):
-    def strip_url(u):
-      u=u._replace(path='')
-      u=u._replace(query='')
-      u=u._replace(fragment='')
-      return u
-    from urlparse import urlparse
-    u_a = strip_url(urlparse(a))
-    u_b = strip_url(urlparse(b))
-    return u_a == u_b
-
   # Make sure a webhook exists and reports back to greg
   def ensure_webhook(self,organization,name,my_url):
       proper_hook = {

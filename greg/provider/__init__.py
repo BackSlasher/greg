@@ -43,6 +43,18 @@ event:
   def list_repos(self,organization):
     pass
 
+  def url_base_compare(self,a,b):
+    def strip_url(u):
+      u=u._replace(path='')
+      u=u._replace(query='')
+      u=u._replace(fragment='')
+      return u
+    from urlparse import urlparse
+    u_a = strip_url(urlparse(a))
+    u_b = strip_url(urlparse(b))
+    return u_a == u_b
+
+
 def locate_bridge(provider_type):
   if provider_type == 'bitbucket':
     import greg.provider.bitbucket

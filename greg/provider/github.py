@@ -177,3 +177,48 @@ class BridgeProviderGithub(BridgeProvider):
     # https://developer.github.com/v3/issues/comments/
     # body: { "body": "Me too"}
     return self.api('/repos/%s/%s/issues/%d/comments' % (organization,name,pr), form_data = {'body': message}, request_type='json')
+
+  # Make sure a repo has a greg webhook
+  def ensure_webhook(self,organization,name,my_url):
+      proper_hook = {
+              'name': 'web',
+              'config': {
+                  'url': my_url,
+                  'content_type': 'json',
+                  # TODO add secret
+                  },
+              'events': ['push', 'issue_comment'],
+              'active': True,
+              }
+      hooks = self.api('/repos/%s/%s/hooks'%(organization,name))
+      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url)]
+      if len(existing_hooks) == 1:
+          # Replace hook if needed
+          existing_hook = existing_hooks[0]
+          existing_values = [existing_hook[k] for k in proper_hook.keys()]
+          existing_ok = existing_values == proper_hook.values()
+          if not existing_ok:
+              # replace
+              self.api(
+                      '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
+                      form_data=proper_hook,
+                      method='PATCH',
+                      request_type='json'
+                      )
+          else:
+              # Delete all hooks if there are any
+              for hook in existing_hooks:
+                  self.api(
+                          '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
+                          method='DELETE'
+                          )
+              # Create new hook
+              self.api(
+                      '/repos/%s/%s/hooks'%(organization,name),
+                      form_data=proper_hook,
+                      method='POST',
+                      request_type='json'
+                      )
+  # Get all repos in a specific organization
+  def list_repos(self,organization):
+      return [repo['name'] for repo in self.api('/users/%s/repos'%(organization))]
