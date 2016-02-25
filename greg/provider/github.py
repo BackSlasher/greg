@@ -191,7 +191,7 @@ class BridgeProviderGithub(BridgeProvider):
               'active': True,
               }
       hooks = self.api('/repos/%s/%s/hooks'%(organization,name))
-      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['url'],my_url)]
+      existing_hooks = [hook for hook in hooks if self.url_base_compare(hook['config']['url'],my_url)]
       if len(existing_hooks) == 1:
           # Replace hook if needed
           existing_hook = existing_hooks[0]
