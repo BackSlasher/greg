@@ -274,3 +274,84 @@ class TestBridgeProviderGithub(unittest.TestCase):
       testee.api = replacement_api
       testee.ensure_webhook('octocat','Hello-World','http://me.com')
       dest.assert_not_called()
+
+    def test_ensure_webhook_remove(self):
+      testee = self.get_testee()
+      dest=MagicMock()
+      def replacement_api(*args, **kwargs):
+        method=kwargs.get('method',None)
+        if args[0].endswith('/hooks') and (method=='get' or method is None):
+          return [
+            {
+              "id": 1,
+              "url": "https://api.github.com/repos/octocat/Hello-World/hooks/1",
+              "test_url": "https://api.github.com/repos/octocat/Hello-World/hooks/1/test",
+              "ping_url": "https://api.github.com/repos/octocat/Hello-World/hooks/1/pings",
+              "name": "web",
+              "events": [
+                "push",
+                "pull_request"
+              ],
+              "active": True,
+              "config": {
+                "url": "http://me.com?bla=blu",
+                "content_type": "json"
+              },
+              "updated_at": "2011-09-06T20:39:23Z",
+              "created_at": "2011-09-06T17:26:27Z"
+            },
+            {
+              "id": 2,
+              "url": "https://api.github.com/repos/octocat/Hello-World/hooks/2",
+              "test_url": "https://api.github.com/repos/octocat/Hello-World/hooks/2/test",
+              "ping_url": "https://api.github.com/repos/octocat/Hello-World/hooks/2/pings",
+              "name": "web",
+              "events": [
+                "push",
+                "pull_request"
+              ],
+              "active": True,
+              "config": {
+                "url": "http://me.com?bla=ble",
+                "content_type": "json"
+              },
+              "updated_at": "2011-09-06T20:39:23Z",
+              "created_at": "2011-09-06T17:26:27Z"
+            },
+            {
+              "id": 3,
+              "url": "https://api.github.com/repos/octocat/Hello-World/hooks/3",
+              "test_url": "https://api.github.com/repos/octocat/Hello-World/hooks/3/test",
+              "ping_url": "https://api.github.com/repos/octocat/Hello-World/hooks/3/pings",
+              "name": "web",
+              "events": [
+                "push",
+                "pull_request"
+              ],
+              "active": True,
+              "config": {
+                "url": "http://not-me.com",
+                "content_type": "json"
+              },
+              "updated_at": "2011-09-06T20:39:23Z",
+              "created_at": "2011-09-06T17:26:27Z"
+            }
+          ]
+        else:
+          return dest(*args, **kwargs)
+      testee.api = replacement_api
+      testee.ensure_webhook('octocat','Hello-World','http://me.com')
+      dest.assert_any_call('/repos/octocat/Hello-World/hooks/1', method='DELETE')
+      dest.assert_any_call('/repos/octocat/Hello-World/hooks/2', method='DELETE')
+      dest.assert_any_call('/repos/octocat/Hello-World/hooks', form_data={
+        'name': 'web',
+        'config': {
+          'url': 'http://me.com',
+          'content_type': 'json',
+          },
+        'events': ['push', 'issue_comment'],
+        'active': True,
+        },method='POST',
+        request_type='json'
+        )
+

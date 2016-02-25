@@ -209,7 +209,7 @@ class BridgeProviderGithub(BridgeProvider):
           # Delete all hooks if there are any
           for hook in existing_hooks:
               self.api(
-                      '/repos/%s/%s/hooks/%d'%(organization,name,existing_hook['id']),
+                      '/repos/%s/%s/hooks/%d'%(organization,name,hook['id']),
                       method='DELETE'
                       )
           # Create new hook
