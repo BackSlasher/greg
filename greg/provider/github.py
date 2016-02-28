@@ -177,7 +177,7 @@ class BridgeProviderGithub(BridgeProvider):
     return self.api('repos/%s/%s/statuses/%s' % (organization,name,commit), form_data = {
         'state': state_string,
         'target_url': url,
-        'description': state_string, # TODO something prettier?
+        'description': builder_type, # TODO something prettier?
         'context': builder_type,
         }, request_type='json')
 

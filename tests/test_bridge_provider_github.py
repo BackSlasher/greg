@@ -34,7 +34,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
                 form_data = {
                     'state': 'success',
                     'target_url': 'goog',
-                    'description': 'success',
+                    'description': 'jen',
                     'context': 'jen'
                 },
                 request_type='json')
@@ -48,7 +48,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
                 form_data = {
                     'state': 'error',
                     'target_url': 'goog',
-                    'description': 'error',
+                    'description': 'jen',
                     'context': 'jen'
                 },
                 request_type='json')
