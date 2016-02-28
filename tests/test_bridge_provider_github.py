@@ -106,7 +106,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_push(self):
         testee = self.get_testee()
         headers = {
-                'X-GitHub-Event': 'PushEvent',
+                'X-Github-Event': 'PushEvent',
                 }
         querystring={
                 'token': 'glig',
@@ -128,7 +128,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_comment(self):
         testee = self.get_testee()
         headers = {
-                'X-GitHub-Event': 'IssueCommentEvent',
+                'X-Github-Event': 'IssueCommentEvent',
                 }
         querystring={
                 'token': 'glig',
@@ -175,7 +175,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_ping(self):
         testee = self.get_testee()
         headers = {
-                'X-GitHub-Event': 'ping',
+                'X-Github-Event': 'ping',
                 }
         querystring={
                 'token': 'glig',
@@ -188,7 +188,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_bad_token(self):
         testee = self.get_testee()
         headers = {
-                'X-GitHub-Event': 'ping',
+                'X-Github-Event': 'ping',
                 }
         querystring={
                 'token': 'bad_token',

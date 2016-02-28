@@ -92,7 +92,7 @@ class BridgeProviderGithub(BridgeProvider):
 
   def parse_payload(self, body, headers={}, querystring={}):
     import re
-    event_type = headers['X-GitHub-Event']
+    event_type = headers['X-Github-Event']
 
     presented_token=querystring['token']
     # Verify token
