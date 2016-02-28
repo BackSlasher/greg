@@ -117,6 +117,21 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res,'bla')
 
 
+  # parsing payload - bad token
+  def test_payload_bad_token(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    headers = {
+      'X-Event-Key': 'pullrequest:comment_created',
+      }
+    querystring={
+      'token': 'bad_token',
+      }
+    with self.assertRaises(Exception) as cm: testee.parse_payload('{}',headers,querystring)
+
   # parsing a payload - PR comment
   def test_payload_comment(self):
     testee = BridgeProviderBitbucket({
