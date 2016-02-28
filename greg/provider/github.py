@@ -112,7 +112,8 @@ class BridgeProviderGithub(BridgeProvider):
                 },
             'event': {},
     }
-    if event_type == 'IssueCommentEvent':
+    # IssueCommentEvent
+    if event_type == 'issue_comment':
         ret['repo']['organization'] = body['repository']['owner']['login']
         # make sure is pull request
         if not body['issue'].has_key('pull_request'): return
@@ -139,7 +140,8 @@ class BridgeProviderGithub(BridgeProvider):
 
         # Collect text
         ret['event']['text']=body['comment']['body']
-    elif event_type == 'PushEvent':
+    # PushEvent
+    elif event_type == 'push':
       ret['repo']['organization'] = body['repository']['owner']['name']
       ret['event']= {
           'type': 'push',

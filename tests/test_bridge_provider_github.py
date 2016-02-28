@@ -106,7 +106,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_push(self):
         testee = self.get_testee()
         headers = {
-                'X-Github-Event': 'PushEvent',
+                'X-Github-Event': 'push',
                 }
         querystring={
                 'token': 'glig',
@@ -128,7 +128,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_payload_comment(self):
         testee = self.get_testee()
         headers = {
-                'X-Github-Event': 'IssueCommentEvent',
+                'X-Github-Event': 'issue_comment',
                 }
         querystring={
                 'token': 'glig',
