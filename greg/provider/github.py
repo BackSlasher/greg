@@ -185,7 +185,7 @@ class BridgeProviderGithub(BridgeProvider):
     # POST /repos/:owner/:repo/issues/:number/comments
     # https://developer.github.com/v3/issues/comments/
     # body: { "body": "Me too"}
-    return self.api('repos/%s/%s/issues/%d/comments' % (organization,name,pr), form_data = {'body': message}, request_type='json')
+    return self.api('repos/%s/%s/issues/%d/comments' % (organization,name,int(pr)), form_data = {'body': message}, request_type='json')
 
   # Make sure a repo has a greg webhook
   def ensure_webhook(self,organization,name,my_url):
