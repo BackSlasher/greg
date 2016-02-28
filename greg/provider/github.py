@@ -85,7 +85,7 @@ class BridgeProviderGithub(BridgeProvider):
     return approvers
 
   def get_code_status(self, org, repo_name, commit):
-    target_url = 'repos/%s/%s/statuses/%s' % (org, repo_name, commit)
+    target_url = 'repos/%s/%s/status/%s' % (org, repo_name, commit)
     resp = self.api(target_url)
     state_string = resp['state']
     return state_string
