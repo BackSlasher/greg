@@ -184,6 +184,18 @@ class TestBridgeProviderGithub(unittest.TestCase):
         res = testee.parse_payload('{}',headers,querystring)
         self.assertEqual(res,None)
 
+    # parsing payload - bad token
+    def test_payload_bad_token(self):
+        testee = self.get_testee()
+        headers = {
+                'X-GitHub-Event': 'ping',
+                }
+        querystring={
+                'token': 'bad_token',
+                }
+
+        with self.assertRaises(Exception) as cm: testee.parse_payload('{}',headers,querystring)
+
     # webhook maintenance
     def test_list_repos(self):
       testee = self.get_testee()

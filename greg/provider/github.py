@@ -94,6 +94,10 @@ class BridgeProviderGithub(BridgeProvider):
     import re
     event_type = headers['X-GitHub-Event']
 
+    presented_token=querystring['token']
+    # Verify token
+    if self.incoming_token != presented_token: raise Exception('Bad token')
+
     # Return nothing if ping, to ignore this event
     if event_type == 'ping':
         return
