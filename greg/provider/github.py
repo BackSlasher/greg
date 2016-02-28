@@ -46,7 +46,7 @@ class BridgeProviderGithub(BridgeProvider):
 
   def my_username(self):
       if not self._my_username:
-        self._my_username=self.api('1.0','user')['login']
+        self._my_username=self.api('user')['login']
       return self._my_username
 
 
