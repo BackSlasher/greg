@@ -31,6 +31,10 @@ def repo(provider,payload,headers={},querystring={}):
   payload = probri.parse_payload(payload,headers,querystring)
   config = greg.config.get_config()
   # Get action (comment / push)
+  if payload is None:
+    # TODO log ignoring empty payload
+    # Empty payloads are allowed if provider chooses to ignore this event
+    pass
   if payload['event']['type'] == 'pr:comment': # Comment
     escaped_string = re.sub('[^a-z]+','',payload['event']['text'].lower())
     if  escaped_string == 'gregplease': # Greg please

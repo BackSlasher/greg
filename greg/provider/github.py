@@ -92,6 +92,12 @@ class BridgeProviderGithub(BridgeProvider):
 
   def parse_payload(self, body, headers={}, querystring={}):
     import re
+    event_type = headers['X-GitHub-Event']
+
+    # Return nothing if ping, to ignore this event
+    if event_type == 'ping':
+        return
+
     body = json.loads(body)
     repo_name = body['repository']['name']
     ret={
@@ -102,8 +108,6 @@ class BridgeProviderGithub(BridgeProvider):
                 },
             'event': {},
     }
-    event_type = headers['X-GitHub-Event']
-    # make sure pull_request
     if event_type == 'IssueCommentEvent':
         ret['repo']['organization'] = body['repository']['owner']['login']
         # make sure is pull request

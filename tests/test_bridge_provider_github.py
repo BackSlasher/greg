@@ -171,6 +171,19 @@ class TestBridgeProviderGithub(unittest.TestCase):
         self.assertEqual(res['event']['pr']['id'],1347)
         self.assertEqual(res['event']['pr']['code_ok'],True)
 
+    # parsing payload - ping
+    def test_payload_ping(self):
+        testee = self.get_testee()
+        headers = {
+                'X-GitHub-Event': 'ping',
+                }
+        querystring={
+                'token': 'glig',
+                }
+
+        res = testee.parse_payload('{}',headers,querystring)
+        self.assertEqual(res,None)
+
     # webhook maintenance
     def test_list_repos(self):
       testee = self.get_testee()
