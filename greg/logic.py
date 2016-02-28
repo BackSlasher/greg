@@ -35,7 +35,7 @@ def repo(provider,payload,headers={},querystring={}):
     # TODO log ignoring empty payload
     # Empty payloads are allowed if provider chooses to ignore this event
     pass
-  if payload['event']['type'] == 'pr:comment': # Comment
+  elif payload['event']['type'] == 'pr:comment': # Comment
     escaped_string = re.sub('[^a-z]+','',payload['event']['text'].lower())
     if  escaped_string == 'gregplease': # Greg please
       merge_check = allowed_merge(payload)
