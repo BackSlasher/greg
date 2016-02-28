@@ -129,8 +129,7 @@ class BridgeProviderBitbucket(BridgeProvider):
           'changes': changes, # Note: this is an array that can be empty
           }
     else:
-      #TODO log ignoring event
-      pass
+      raise Exception('Unknown event type '+method)
 
     return ret
 

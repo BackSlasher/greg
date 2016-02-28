@@ -151,8 +151,7 @@ class BridgeProviderGithub(BridgeProvider):
             ],
       }
     else:
-      #TODO log ignoring event
-      pass
+      raise Exception('Unknown event type '+event_type)
 
     return ret
 

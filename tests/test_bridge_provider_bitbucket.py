@@ -164,6 +164,22 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res['event']['pr']['id'],1)
     self.assertEqual(res['event']['pr']['code_ok'],True)
 
+  # parsing payload - bad event type
+  def test_payload_bad_event(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    headers = {
+      'X-Github-Event': 'badbadbad',
+      }
+    querystring={
+      'token': 'glig',
+      }
+
+    with self.assertRaises(Exception) as cm: testee.parse_payload('{}',headers,querystring)
+
   def test_url_base_compare(self):
     testee = BridgeProviderBitbucket({
       'username': 'greg',

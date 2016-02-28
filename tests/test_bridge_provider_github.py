@@ -196,6 +196,18 @@ class TestBridgeProviderGithub(unittest.TestCase):
 
         with self.assertRaises(Exception) as cm: testee.parse_payload('{}',headers,querystring)
 
+    # parsing payload - bad event type
+    def test_payload_bad_event(self):
+        testee = self.get_testee()
+        headers = {
+                'X-Github-Event': 'badbadbad',
+                }
+        querystring={
+                'token': 'glig',
+                }
+
+        with self.assertRaises(Exception) as cm: testee.parse_payload('{}',headers,querystring)
+
     # webhook maintenance
     def test_list_repos(self):
       testee = self.get_testee()
