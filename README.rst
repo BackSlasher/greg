@@ -6,9 +6,6 @@ Greg
 Integrates source providers, build servers and people
 ------------------------------------------------------
 
-NOT FINISHED
-============
-
 Abstract
 ========
 Greg is a small independent utility that helps connect your source code provider (e.g. GitHub), your build servers (e.g. Jenkins) and your code maintainers (e.g. developers).  
