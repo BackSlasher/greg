@@ -392,3 +392,9 @@ class TestBridgeProviderGithub(unittest.TestCase):
         request_type='json'
         )
 
+    def test_api_next_page(self):
+      testee = self.get_testee()
+      inp = r'<https://api.github.com/organizations/12912945/repos?type=all&page=2>; rel="next", <https://api.github.com/organizations/12912945/repos?type=all&page=2>'
+      res = testee.api_next_page(inp)
+      self.assertEqual(res,'https://api.github.com/organizations/12912945/repos?type=all&page=2')
+

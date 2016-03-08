@@ -2,6 +2,7 @@
 from greg.provider import BridgeProvider
 import requests
 import json
+import re
 
 class BridgeProviderGithub(BridgeProvider):
 
@@ -10,6 +11,12 @@ class BridgeProviderGithub(BridgeProvider):
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']
     self._my_username=None
+
+  def api_next_page(self, link_header):
+    raw_links = link_header.split(',')
+    raw_next_link = [l for l in raw_links if ('rel="next"' in l)][0]
+    link = re.match('<(.+)>',raw_next_link).groups()[0]
+    return link
 
   def api_raw(self,url,form_data={},method=None,request_type=None):
     headers={}
@@ -33,11 +40,11 @@ class BridgeProviderGithub(BridgeProvider):
     if resp.headers['content-type'].startswith('application/json'):
       body = json.loads(body)
       # Handle pagination
-      if method == 'GET' and type(body)==dict and body.keys() and set(body.keys()).issubset(set(['size','page','pagelen','next','previous','values'])):
-        values = body['values']
-        if body.has_key('next'):
-          values.extend(self.api_raw(body['next']))
-        return values
+      links = resp.headers.get('Link')
+      if method == 'GET' and type(body)==list and links and ('rel="next"' in links):
+        next_page_link = self.api_next_page(links)
+        new_body = self.api_raw(next_page_link,form_data=form_data, method=method, request_type=request_type)
+        body.extend(new_body)
     return body
 
   def api(self,path,form_data={},method=None,request_type=None):
@@ -51,7 +58,6 @@ class BridgeProviderGithub(BridgeProvider):
 
 
   def comment_is_referencing_me(self, comment_text):
-    import re
     return re.search(r'(?<!\w)@%s\b' % (re.escape(self.my_username())), comment_text)
 
   def comments_collect_reviewers(self,comment_object_list):
