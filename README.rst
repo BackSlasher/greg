@@ -104,7 +104,9 @@ If Jenkins requires Greg's help in notifying the provider when the test/merge pa
 
 First, Jenkins should have the `notification plugin <https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin>`__ installed.
 
-Second, the job should be configured to notify Greg when the job is completed. This can be done by the `--fix-hooks` command. These are the required parameters, in case you want to do so manually:
+**notice** config below is automatically handled with `--fix-hooks`
+
+Second, the job should be configured to notify Greg when the job is completed. These are the required parameters, in case you want to do so manually:
 
 - Format: JSON
 - Protocol: HTTP
@@ -112,3 +114,54 @@ Second, the job should be configured to notify Greg when the job is completed. T
 - URL: <GREG>/build?builder=jenkins&token=<PRIVATE_TOKEN>
 - Timeout: 30000
 - Log: 0
+
+
+GitHub
+------
+GitHub is supported as a provider
+
+General requirements
+````````````````````
+
+- Greg and GitHub should have HTTP access to each other
+- Greg should have a user (+password / key) for GitHub. This user should be able to read the repository
+
+Webhook configuration
+`````````````````````
+
+**notice** config below is automatically handled with `--fix-hooks`
+
+Each repository should have a single webhook pointing to Greg. Parameters are as follows:
+
+- Payload URL: `<GREG>/repo?provider=github&token=<PRIVATE_TOKEN>`
+- Content Type: `application/json`
+- Events sent:
+
+  - Push
+  - Issue comment
+
+- Active: True
+
+BitBucket
+---------
+BitBucket is supported as a provided
+
+General requirements
+````````````````````
+
+- Greg and BitBucket should have HTTP acccess to each other
+- Greg should have a user (+password / key) for BitBucket. This user should be able to read the repository
+
+Webhook configuration
+`````````````````````
+
+**notice** config below is automatically handled with `--fix-hooks`
+
+Each repository should have a single webhook pointing to Greg. Parameters are as follows:
+
+- URL: `<GREG>/repo?provider=bitbucket&token=<PRIVATE_TOKEN>`
+- Status: Active
+- Triggers:
+
+  - Repository: Push
+  - Pull Request: Comment created
