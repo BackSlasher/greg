@@ -14,7 +14,7 @@ I started working on it because I wanted to automate my cookbook lifecycle and c
 
 Basics
 ======
-Greg runs as a flask server (in the future: Django and AWS Lambda support) and is configured using a ``config.yaml``.
+Greg runs as a flask server (ready for AWS Elastic Beanstalk, in the future: Django and AWS Lambda support) and is configured using a ``config.yaml``.
 
 It does 3 things:
 
@@ -24,7 +24,40 @@ It does 3 things:
 
 Structure
 =========
-Greg is designed to be modular. It contains multiple "bridge" modules that allow it to work with multiple build servers / code providers. I've only implemented what I require, but this should allow one to integreate Greg with other builders/providers
+Greg is designed to be modular. It contains multiple "bridge" modules that allow it to work with multiple build servers / code providers. I've only implemented what I require, but this should allow one to integreate Greg with other builders/providers.
+
+Every provider/builder should have an entry in the `config.yaml` file, containing the provider/builder URL, Greg's credentials and an "incoming token". This token is used as some sort of authentication - each message from the builder/provider should contain this token.
+
+Basic Workflow
+--------------
+
+On code pushes (automatic testing):
+
+1. User pushes code to PROVIDER
+2. PROVIDER notifies Greg (via webhook)
+3. Greg checks if referenced repository has a test job defined (assuming it does)
+4. Greg invokes relevant job on BUILDER with parameters referring to the relevant commit in the repository.
+5. BUILDER completes test job and notifies Greg
+6. Greg notifies PROVIDER about the test success/failure
+
+On managing pull requests:
+
+1. User creates pull request
+2. User wants to see if all clear, comments "Greg OK" on the PR
+3. PROVIDER notifies Greg
+4. Greg surveys the repository on PROVIDER and reports back whether the PR is mergable, and posts the result on the PR
+5. User fixes stuff (or not) and tries to merge. Comments "Greg please" on the PR
+6. Greg checks the PR. Assuming it's mergable, it invokes the matching merge job on BUILDER
+7. BUILDER notifies Greg on job completion
+8. If merge job was completed successfully, do nothing. If not, comment on the PR
+
+"Mergable" PRs
+---------------
+a PR is considered mergable by Greg if:
+
+- Source and destination repo are identical
+- All of the reviewers approved the PR (actual implementation differs across providers)
+- The head (commit to be merged) has to pass Greg's approval
 
 Hacking and testing
 ===================
@@ -38,11 +71,23 @@ External configuration
 
 Jenkins
 -------
-Credentials, root URL and incoming token go in the ``config.yaml``
+Jenkins is supported as a builder
+
+General requirements
+`````````````````````
+- Greg and Jenkins should have HTTP access to each other.
+- Greg should have a user (+password / API key) to Jenkins. This user should be able to lunch jobs. My working permission set: ::
+
+    Jenkins.READ
+    Item.DISCOVER
+    Item.READ
+    Item.BUILD
+    
+  Jenkins' URL, credentials and incoming token should be stored in Greg's config file.
 
 Job configuration
 `````````````````
-Job should have the following parameters:
+Greg invokes jobs with the following parameters. If there are extra parameters, they'll have their default value.
 
 - SOURCE (string): git repo url
 - COMMIT (string): commit to test/merge
@@ -53,11 +98,13 @@ Job should have the following parameters:
 
 Job reporting
 `````````````
+Greg supports reporting the test/merge job result to the provider. To do so, we need to instruct Jenkins to report back to Greg.
+
 If Jenkins requires Greg's help in notifying the provider when the test/merge passed/failed (we currently use it):
 
-Job should use the `notification plugin <https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin>`__ to report its status:
+First, Jenkins should have the `notification plugin <https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin>`__ installed.
 
-TODO should be automatically configured according to ``config.yaml``
+Second, the job should be configured to notify Greg when the job is completed. This can be done by the `--fix-hooks` command. These are the required parameters, in case you want to do so manually:
 
 - Format: JSON
 - Protocol: HTTP
