@@ -66,7 +66,8 @@ class BridgeProviderGithub(BridgeProvider):
     for comment_object in comment_object_list:
       text = comment_object['body']
       if not self.comment_is_referencing_me(text): continue # Skip if not referncing me
-      mentions = set(re.findall(r'(?<!\w)@(\w+)',text))
+      # http://stackoverflow.com/questions/30281026/regex-parsing-github-usernames-javascript
+      mentions = set(re.findall(r'\B@([a-z0-9](?:-?[a-z0-9]){0,38})',text))
       reviewers.update(mentions)
     reviewers.discard(self.my_username())
     return reviewers

@@ -56,7 +56,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
     def test_collect_reviewers(self):
         comments = [
                 {
-                    'body': '@greg review @bla @blu'
+                    'body': '@greg review @bla @blu-u'
                 },
                 {
                     'body': '@greg hello @bli'
@@ -68,7 +68,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
         testee = self.get_testee()
         testee.my_username = lambda: 'greg'
         res = testee.comments_collect_reviewers(comments)
-        self.assertEqual(res, set(['bla','blu','bli']))
+        self.assertEqual(res, set(['bla','blu-u','bli']))
 
     def test_collect_approvers(self):
         comments = [
