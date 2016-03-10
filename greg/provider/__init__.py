@@ -1,9 +1,14 @@
 # Allows Greg to talk to code providers
 import greg.config
+import re
 
 class BridgeProvider(object):
   def __init__(self, dic):
     self._my_username=None
+    # GitHub syntax, might not apply to all
+    # http://stackoverflow.com/questions/30281026/regex-parsing-github-usernames-javascript
+    self.username_regex = r'\B@([a-z0-9](?:-?[a-z0-9]){0,38})'
+
   # Document type:
   '''
 repo:
@@ -63,6 +68,20 @@ event:
         self._my_username=self.get_my_username()
       return self._my_username
 
+
+  # Get all people mentioned in a text message
+  def text_mentions(self,text):
+    return set(re.findall(self.username_regex,text))
+
+  # Check if I'm mentioned in a message
+  def text_mentioning_me(self, text):
+    people_mentioned = self.text_mentions(text)
+    return self.my_username() in people_mentioned
+
+  # Filter user mentions from a text message
+  def text_filter_mentions(self, text):
+    ret = re.sub(self.username_regex, '', text)
+    return ret
 
 def locate_bridge(provider_type):
   if provider_type == 'bitbucket':

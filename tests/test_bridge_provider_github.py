@@ -68,7 +68,7 @@ class TestBridgeProviderGithub(unittest.TestCase):
         testee = self.get_testee()
         testee.my_username = lambda: 'greg'
         res = testee.comments_collect_reviewers(comments)
-        self.assertEqual(res, set(['bla','blu-u','bli']))
+        self.assertEqual(res, set(['bla','blu-u']))
 
     def test_collect_approvers(self):
         comments = [

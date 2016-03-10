@@ -55,17 +55,15 @@ class BridgeProviderGithub(BridgeProvider):
   def get_my_username(self):
       return self.api('user')['login']
 
-  def comment_is_referencing_me(self, comment_text):
-    return re.search(r'(?<!\w)@%s\b' % (re.escape(self.my_username())), comment_text)
-
   def comments_collect_reviewers(self,comment_object_list):
     import re
     reviewers=set()
     for comment_object in comment_object_list:
       text = comment_object['body']
-      if not self.comment_is_referencing_me(text): continue # Skip if not referncing me
-      # http://stackoverflow.com/questions/30281026/regex-parsing-github-usernames-javascript
-      mentions = set(re.findall(r'\B@([a-z0-9](?:-?[a-z0-9]){0,38})',text))
+      if not self.text_mentioning_me(text): continue # Skip if not referncing me
+      mentions = self.text_mentions(text)
+      text = self.text_filter_mentions(text)
+      if not 'review' in text: continue # Skip if not containing "review" in some form
       reviewers.update(mentions)
     reviewers.discard(self.my_username())
     return reviewers
@@ -76,7 +74,7 @@ class BridgeProviderGithub(BridgeProvider):
     for comment_object in comment_object_list:
       text = comment_object['body']
       writer = comment_object['user']['login']
-      if not self.comment_is_referencing_me(text): continue # Skip if not referncing me
+      if not self.text_mentioning_me(text): continue # Skip if not referncing me
       # Find approving comments
       has_lgtm = re.search(r'\bLGTM\b', text, re.IGNORECASE) is not None
       # Find rejecting comments
