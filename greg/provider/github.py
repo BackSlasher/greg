@@ -120,6 +120,13 @@ class BridgeProviderGithub(BridgeProvider):
         ret['repo']['organization'] = body['repository']['owner']['login']
         # make sure is pull request
         if not body['issue'].has_key('pull_request'): return
+        text = body['comment']['body']
+        # Make sure I'm mentioned
+        if not self.text_mentioning_me(text): return
+        # Make sure it's not from me
+        if body['sender']['login'] == self.my_username(): return
+        # Filter my mentions from the text
+        text = self.text_filter_me(text)
         pr_object = self.api_raw(body['issue']['pull_request']['url'])
         comments_object = self.api_raw(pr_object['comments_url'])
 
@@ -142,7 +149,7 @@ class BridgeProviderGithub(BridgeProvider):
         ret['event']['pr']=pr_hash
 
         # Collect text
-        ret['event']['text']=body['comment']['body']
+        ret['event']['text']=text
     # PushEvent
     elif event_type == 'push':
       ret['repo']['organization'] = body['repository']['owner']['name']

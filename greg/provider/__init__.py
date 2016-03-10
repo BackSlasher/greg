@@ -78,6 +78,12 @@ event:
     people_mentioned = self.text_mentions(text)
     return self.my_username() in people_mentioned
 
+  # Filter my mention from a text message
+  #TODO test - ensure that I'm not filtering @bla-blason when my name is @bla
+  def text_filter_me(self,text):
+    ret = re.sub('(?=%s)%s' %(self.username_regex,re.escape(self.my_username())), '', text)
+    return ret
+
   # Filter user mentions from a text message
   def text_filter_mentions(self, text):
     ret = re.sub(self.username_regex, '', text)
