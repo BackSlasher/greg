@@ -1,3 +1,4 @@
+# pylint: disable=bad-super-call
 
 from greg.provider import BridgeProvider
 import requests
@@ -7,6 +8,7 @@ import re
 class BridgeProviderGithub(BridgeProvider):
 
   def __init__(self, dic):
+    super(BridgeProviderGithub,self).__init__(dic)
     self.username=dic['username']
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']

@@ -1,3 +1,4 @@
+# pylint: disable=bad-super-call
 
 from greg.provider import BridgeProvider
 import requests
@@ -66,6 +67,7 @@ class BridgeProviderBitbucket(BridgeProvider):
         return self.api('2.0',"repositories/%s/%s/commit/%s/approve"%(organization, name.lower(), commit),method=( 'post' if is_approved else 'delete'))
 
   def __init__(self, dic):
+    super(BridgeProviderBitbucket,self).__init__(dic)
     self.username=dic['username']
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']

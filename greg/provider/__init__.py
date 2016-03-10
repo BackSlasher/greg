@@ -1,7 +1,7 @@
 # Allows Greg to talk to code providers
 import greg.config
 
-class BridgeProvider:
+class BridgeProvider(object):
   def __init__(self, dic):
     pass
   # Document type:
