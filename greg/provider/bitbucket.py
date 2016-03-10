@@ -38,10 +38,9 @@ class BridgeProviderBitbucket(BridgeProvider):
     uri="https://api.bitbucket.org/%s/%s" %(version,path)
     return self.api_raw(uri,form_data,method,request_type)
 
-  def my_username(self):
-      if not self._my_username:
-        self._my_username=self.api('1.0','user')['user']['username']
-      return self._my_username
+  def get_my_username(self):
+    return self.api('1.0','user')['user']['username']
+
 
   def get_pr_json(self, organization, name, pr_id):
     return self.api('2.0',"repositories/%s/%s/pullrequests/%s" %(organization, name.lower(), pr_id))
@@ -71,7 +70,6 @@ class BridgeProviderBitbucket(BridgeProvider):
     self.username=dic['username']
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']
-    self._my_username=None
 
   def parse_payload(self, body, headers={}, querystring={}):
     presented_token=querystring['token']

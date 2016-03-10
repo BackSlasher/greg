@@ -12,7 +12,6 @@ class BridgeProviderGithub(BridgeProvider):
     self.username=dic['username']
     self.password=dic['password']
     self.incoming_token=dic['incoming_token']
-    self._my_username=None
 
   def api_next_page(self, link_header):
     raw_links = link_header.split(',')
@@ -53,11 +52,8 @@ class BridgeProviderGithub(BridgeProvider):
     uri = 'https://api.github.com/%s' % (path)
     return self.api_raw(uri, form_data, method, request_type)
 
-  def my_username(self):
-      if not self._my_username:
-        self._my_username=self.api('user')['login']
-      return self._my_username
-
+  def get_my_username(self):
+      return self.api('user')['login']
 
   def comment_is_referencing_me(self, comment_text):
     return re.search(r'(?<!\w)@%s\b' % (re.escape(self.my_username())), comment_text)

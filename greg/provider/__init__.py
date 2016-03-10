@@ -3,7 +3,7 @@ import greg.config
 
 class BridgeProvider(object):
   def __init__(self, dic):
-    pass
+    self._my_username=None
   # Document type:
   '''
 repo:
@@ -53,6 +53,15 @@ event:
     u_a = strip_url(urlparse(a))
     u_b = strip_url(urlparse(b))
     return u_a == u_b
+
+  # Get the our username. Should be used only by my_username
+  def get_my_username(self):
+    raise NotImplementedError("Please Implement this method")
+
+  def my_username(self):
+      if not self._my_username:
+        self._my_username=self.get_my_username()
+      return self._my_username
 
 
 def locate_bridge(provider_type):
