@@ -26,22 +26,22 @@ event:
   '''
   # Should also test querystring['token']
   def parse_payload(self, body, headers={}, querystring={}):
-    pass
+    raise NotImplementedError("Please Implement this method")
   # Post the result on a commit.
   # commit is the commit sha
   # builder_type is a string used to identify the reporting builder
   # url is a URL for the builder's result page
   # result is a boolean indicating pass/fail (Allow None for "in progress")?
   def post_commit_test(self, organization, name, commit, builder_type, url, result):
-    pass
+    raise NotImplementedError("Please Implement this method")
   def post_pr_message(self, organization, name, pr, message):
-    pass
+    raise NotImplementedError("Please Implement this method")
   # Make sure a repo has a greg webhook
   def ensure_webhook(self,organization,name,my_url):
-      pass
+    raise NotImplementedError("Please Implement this method")
   # Get all repos in a specific organization
   def list_repos(self,organization):
-    pass
+    raise NotImplementedError("Please Implement this method")
 
   def url_base_compare(self,a,b):
     def strip_url(u):

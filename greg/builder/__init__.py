@@ -6,12 +6,12 @@ class BridgeBuilder:
   def __init__(self, dic):
     pass
   def parse_payload(self, body,headers={},querystring={}):
-    pass
+    raise NotImplementedError("Please Implement this method")
   # TODO harden structure (like (job_name, source_repo, source_commit))
   def start_build(self, repo, job_name, params={}):
-    pass
+    raise NotImplementedError("Please Implement this method")
   def ensure_webhook(self,job_name,my_url):
-      pass
+    raise NotImplementedError("Please Implement this method")
 
 def locate_bridge(builder_type):
   if builder_type == 'jenkins':
