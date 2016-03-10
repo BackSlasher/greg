@@ -81,7 +81,8 @@ event:
   # Filter my mention from a text message
   #TODO test - ensure that I'm not filtering @bla-blason when my name is @bla
   def text_filter_me(self,text):
-    ret = re.sub('(?=%s)%s' %(self.username_regex,re.escape(self.my_username())), '', text)
+    pattern = '@%s(?!-?[a-z0-9])' %(re.escape(self.my_username()))
+    ret = re.sub(pattern, '', text)
     return ret
 
   # Filter user mentions from a text message
