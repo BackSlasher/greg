@@ -59,6 +59,18 @@ a PR is considered mergable by Greg if:
 - All of the reviewers approved the PR (actual implementation differs across providers)
 - The head (commit to be merged) has to pass Greg's approval
 
+Approvers and Reviewers
+-----------------------
+This idea started from BitBucket and got migrated to other providers.
+
+Basically, each PR has a set (that can be empty) of "reviewers", which are users that should make sure the PR is a good idea.
+
+Each PR also has a set (that can be empty) of "approvers", which are users that currently think this PR is a good idea.
+
+One of Greg's requirements for merging PRs is having all of the reviewers approve.
+
+The way for managing reviewers / approvers differs per provider
+
 Hacking and testing
 ===================
 - Clone
@@ -165,3 +177,7 @@ Each repository should have a single webhook pointing to Greg. Parameters are as
 
   - Repository: Push
   - Pull Request: Comment created
+
+fix-hooks
+=========
+The Greg "binary" (entry point) contains a `--fix-hooks` mode. This command will make Greg go over all of the repositories and jobs detailed in the config file, and make sure they're configured to report back to Greg. For this to work, Greg must have permissions to modify the webhooks on relevant repos/jobs, and must also know its URL, specified with the `--url` argument.
