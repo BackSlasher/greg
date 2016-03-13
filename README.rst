@@ -156,7 +156,7 @@ Each repository should have a single webhook pointing to Greg. Parameters are as
 
 BitBucket
 ---------
-BitBucket is supported as a provided
+BitBucket is supported as a provider
 
 General requirements
 ````````````````````
