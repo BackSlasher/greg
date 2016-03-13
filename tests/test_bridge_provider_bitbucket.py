@@ -164,6 +164,28 @@ class TestBridgeProviderBitbucket(unittest.TestCase):
     self.assertEqual(res['event']['pr']['id'],1)
     self.assertEqual(res['event']['pr']['code_ok'],True)
 
+  # parsing a payload - PR comment - no mention
+  def test_payload_comment_no_mention(self):
+    testee = BridgeProviderBitbucket({
+      'username': 'greg',
+      'password': 'grog',
+      'incoming_token': 'glig',
+      })
+    headers={
+        'X-Event-Key': 'pullrequest:comment_created',
+        }
+    querystring={
+        'token': 'glig',
+        }
+    testee.my_username = lambda: 'greg'
+    body_path = os.path.join(os.path.dirname(__file__), 'responses/bitbucket_pr_comment_nogreg.txt')
+    with open (body_path) as myfile:
+        body=myfile.read()
+
+    testee.get_commit_approval = MagicMock(return_value=True)
+    res = testee.parse_payload(body,headers,querystring)
+    self.assertEqual(res,None)
+
   # parsing payload - bad event type
   def test_payload_bad_event(self):
     testee = BridgeProviderBitbucket({

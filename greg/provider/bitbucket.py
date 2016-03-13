@@ -90,6 +90,13 @@ class BridgeProviderBitbucket(BridgeProvider):
         }
     if method == 'pullrequest:comment_created':
       # https://confluence.atlassian.com/bitbucket/event-payloads-740262817.html#EventPayloads-CommentCreated.1
+      text=body['comment']['content']['raw']
+      # Return unless I'm mentioned
+      if not self.text_mentioning_me(text): return
+      # Make sure it's not from me
+      if body['actor']['username'] == self.my_username(): return
+      # Filter my mentions from the text
+      text = self.text_filter_me(text)
       pr_id=body['pullrequest']['id']
       commit_hash=body['pullrequest']['source']['commit']['hash']
       pr_source=body['pullrequest']['source']
@@ -104,7 +111,6 @@ class BridgeProviderBitbucket(BridgeProvider):
       approvers=set(p['user']['username'] for p in body['pullrequest']['participants'] if p['approved'])
       #TODO count code status
       code_ok=self.get_commit_approval(repo_org,repo_name,commit_hash)
-      comment_body=body['comment']['content']['raw']
       ret['event'] = {
           'type': 'pr:comment',
           'pr': {
@@ -116,7 +122,7 @@ class BridgeProviderBitbucket(BridgeProvider):
             'approvers': approvers,
             'code_ok': code_ok,
             },
-          'text': comment_body,
+          'text': text,
           }
     elif method == 'repo:push':
       raw_changes=body['push']['changes']
