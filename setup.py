@@ -113,7 +113,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'greg=greg:main',
+          'greg=greg.__main__:main',
         ],
     },
 )

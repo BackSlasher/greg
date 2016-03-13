@@ -8,7 +8,6 @@ def main():
     parser.add_argument('--fix-hooks', action='store_const', const='fixhooks', dest='action', help='Ensure repos alert greg on changes')
     parser.add_argument('--url', help='Base URL for greg')
     args = parser.parse_args()
-    print args
 
     # Establish config filename
     greg.config.get_config(args.config)
