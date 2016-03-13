@@ -26,7 +26,10 @@ def allowed_merge(payload):
 
 # Generate a help message matching a specific provider
 def get_help_message(provider):
-  basic_help='''My name is %s  
+  basic_help='''My name is %(name)s  
+
+Basic usage: Type a command and tag me (e.g. `@%(name)s help`).  
+
 Basic commands:  
 
 * `help`: Show this message
@@ -35,13 +38,13 @@ Basic commands:
 
 Commands specific to this provider:
 
-%s
+%(pro)s
 
 Source: https://github.com/BackSlasher/greg
 '''
   greg_username = provider.my_username()
   provider_help = provider.get_help_message()
-  return basic_help % (greg_username, provider_help)
+  return basic_help % {'name': greg_username, 'pro': provider_help}
 
 
 # Called from the repository's webhooks
