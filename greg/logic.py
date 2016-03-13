@@ -37,7 +37,10 @@ def repo(provider,payload,headers={},querystring={}):
     pass
   elif payload['event']['type'] == 'pr:comment': # Comment
     escaped_string = re.sub('[^a-z]+','',payload['event']['text'].lower())
-    if  escaped_string == 'gregplease': # Greg please
+    if escaped_string == 'help': # Help
+        # TODO print possible commands
+        probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='help is coming')
+    elif escaped_string == 'please': # Greg please
       merge_check = allowed_merge(payload)
       if merge_check.allowed:
           # Find the correct job to run
@@ -67,7 +70,7 @@ def repo(provider,payload,headers={},querystring={}):
           # Notify that we won't merge because issues
           reason_list = '\n'.join([ '* '+i  for i in merge_check.issues])
           probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='**Will not merge**  \n'+reason_list)
-    elif escaped_string == 'gregok': # Greg OK
+    elif escaped_string == 'ok': # Greg OK
       merge_check = allowed_merge(payload)
       if merge_check.allowed:
           reviewers = ','.join(payload['event']['pr']['reviewers'])

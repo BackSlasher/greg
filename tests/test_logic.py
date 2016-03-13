@@ -157,7 +157,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'greg please',
+                    'text': 'please',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
@@ -186,7 +186,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'greg please',
+                    'text': 'please',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
@@ -215,7 +215,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'greg please',
+                    'text': 'please',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
@@ -260,7 +260,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'Greg please',
+                    'text': 'Please',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
@@ -303,7 +303,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'greg ok',
+                    'text': 'ok',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
@@ -330,7 +330,7 @@ class TestLogic(unittest.TestCase):
                     },
                 'event': {
                     'type': 'pr:comment',
-                    'text': 'greg ok',
+                    'text': 'ok',
                     'pr': {
                         'src_branch': 'donald',
                         'dst_branch': 'duck',
