@@ -112,11 +112,9 @@ Job reporting
 `````````````
 Greg supports reporting the test/merge job result to the provider. To do so, we need to instruct Jenkins to report back to Greg.
 
-If Jenkins requires Greg's help in notifying the provider when the test/merge passed/failed (we currently use it):
-
 First, Jenkins should have the `notification plugin <https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin>`__ installed.
 
-**notice** config below is automatically handled with `--fix-hooks`
+**notice** config below is automatically handled with ``--fix-hooks``
 
 Second, the job should be configured to notify Greg when the job is completed. These are the required parameters, in case you want to do so manually:
 
@@ -141,12 +139,12 @@ General requirements
 Webhook configuration
 `````````````````````
 
-**notice** config below is automatically handled with `--fix-hooks`
+**notice** config below is automatically handled with ``--fix-hooks``
 
 Each repository should have a single webhook pointing to Greg. Parameters are as follows:
 
-- Payload URL: `<GREG>/repo?provider=github&token=<PRIVATE_TOKEN>`
-- Content Type: `application/json`
+- Payload URL: ``<GREG>/repo?provider=github&token=<PRIVATE_TOKEN>``
+- Content Type: ``application/json``
 - Events sent:
 
   - Push
@@ -167,11 +165,11 @@ General requirements
 Webhook configuration
 `````````````````````
 
-**notice** config below is automatically handled with `--fix-hooks`
+**notice** config below is automatically handled with ``--fix-hooks``
 
 Each repository should have a single webhook pointing to Greg. Parameters are as follows:
 
-- URL: `<GREG>/repo?provider=bitbucket&token=<PRIVATE_TOKEN>`
+- URL: ``<GREG>/repo?provider=bitbucket&token=<PRIVATE_TOKEN>``
 - Status: Active
 - Triggers:
 
@@ -180,4 +178,4 @@ Each repository should have a single webhook pointing to Greg. Parameters are as
 
 fix-hooks
 =========
-The Greg "binary" (entry point) contains a `--fix-hooks` mode. This command will make Greg go over all of the repositories and jobs detailed in the config file, and make sure they're configured to report back to Greg. For this to work, Greg must have permissions to modify the webhooks on relevant repos/jobs, and must also know its URL, specified with the `--url` argument.
+The Greg "binary" (entry point) contains a ``--fix-hooks`` mode. This command will make Greg go over all of the repositories and jobs detailed in the config file, and make sure they're configured to report back to Greg. For this to work, Greg must have permissions to modify the webhooks on relevant repos/jobs, and must also know its URL, specified with the ``--url`` argument.
