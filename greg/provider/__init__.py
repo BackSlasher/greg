@@ -47,6 +47,9 @@ event:
   # Get all repos in a specific organization
   def list_repos(self,organization):
     raise NotImplementedError("Please Implement this method")
+  # Get a customized help message
+  def get_help_message(self):
+    return ''
 
   def url_base_compare(self,a,b):
     def strip_url(u):

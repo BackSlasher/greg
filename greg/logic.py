@@ -24,6 +24,26 @@ def allowed_merge(payload):
   # Judgement
   return ret_type(not any(issues),issues)
 
+# Generate a help message matching a specific provider
+def get_help_message(provider):
+  basic_help='''My name is %s  
+Basic commands:  
+
+* `help`: Show this message
+* `please`: Try and merge this PR
+* `ok`: Check if this PR is ready to merge
+
+Commands specific to this provider:
+
+%s
+
+Source: https://github.com/BackSlasher/greg
+'''
+  greg_username = provider.my_username()
+  provider_help = provider.get_help_message()
+  return basic_help % (greg_username, provider_help)
+
+
 # Called from the repository's webhooks
 def repo(provider,payload,headers={},querystring={}):
   # Parse payload
@@ -39,7 +59,8 @@ def repo(provider,payload,headers={},querystring={}):
     escaped_string = re.sub('[^a-z]+','',payload['event']['text'].lower())
     if escaped_string == 'help': # Help
         # TODO print possible commands
-        probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message='help is coming')
+        help_message = get_help_message(probri)
+        probri.post_pr_message(payload['repo']['organization'], payload['repo']['name'], payload['event']['pr']['id'], message=help_message)
     elif escaped_string == 'please': # Greg please
       merge_check = allowed_merge(payload)
       if merge_check.allowed:

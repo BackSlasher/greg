@@ -241,3 +241,10 @@ class BridgeProviderGithub(BridgeProvider):
   # Get all repos in a specific organization
   def list_repos(self,organization):
       return [repo['name'] for repo in self.api('orgs/%s/repos'%(organization))]
+
+  def get_help_message(self):
+      return '''
+* `review`+tagging people: Adds tagged people to the PR reviewers. Also work with "review"-like words (e.g. "reviews")
+* `LGTM`: Adds you (the commenter) to the PR approvers
+* `not LGTM`: Removes you (the commenter) from the PR reviewers
+'''
