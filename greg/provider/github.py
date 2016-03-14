@@ -83,7 +83,7 @@ class BridgeProviderGithub(BridgeProvider):
       # Find rejecting comments
       has_not_lgtm = text == 'notlgtm'
       if has_not_lgtm:
-        approvers.remove(writer)
+        approvers.discard(writer)
       elif has_lgtm:
         approvers.add(writer)
       pass

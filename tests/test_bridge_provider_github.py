@@ -74,6 +74,10 @@ class TestBridgeProviderGithub(unittest.TestCase):
         comments = [
                 {
                     'user': {'login': 'bla'},
+                    'body': '@greg not LGTM',
+                },
+                {
+                    'user': {'login': 'bla'},
                     'body': '@greg LGTM',
                 },
                 {
