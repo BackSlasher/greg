@@ -74,6 +74,7 @@ class BridgeProviderGithub(BridgeProvider):
     for comment_object in comment_object_list:
       text = comment_object['body']
       writer = comment_object['user']['login']
+      if writer == self.my_username(): continue # Skip if written by me
       if not self.text_mentioning_me(text): continue # Skip if not referncing me
       # Find approving comments
       has_lgtm = re.search(r'\bLGTM\b', text, re.IGNORECASE) is not None
