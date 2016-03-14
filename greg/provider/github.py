@@ -76,10 +76,12 @@ class BridgeProviderGithub(BridgeProvider):
       writer = comment_object['user']['login']
       if writer == self.my_username(): continue # Skip if written by me
       if not self.text_mentioning_me(text): continue # Skip if not referncing me
+      text = self.text_filter_mentions(text)
       # Find approving comments
-      has_lgtm = re.search(r'\bLGTM\b', text, re.IGNORECASE) is not None
+      text = re.sub('[^a-z]+','',text.lower())
+      has_lgtm = text == 'lgtm'
       # Find rejecting comments
-      has_not_lgtm = re.search(r'\bnot LGTM\b', text, re.IGNORECASE) is not None
+      has_not_lgtm = text == 'notlgtm'
       if has_not_lgtm:
         approvers.remove(writer)
       elif has_lgtm:
